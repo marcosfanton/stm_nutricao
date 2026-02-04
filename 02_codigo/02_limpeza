@@ -1,0 +1,32 @@
+# STM_NUTRIÇÃO --- Dados Gerais ---------------- ####
+
+# Pacotes ####
+library(tidyverse)
+library(here)
+library(stringi)
+library(textclean)
+
+# Construção do corpus ####
+
+# Unificação dos bancos de 2011-2024
+# Todos os bancos foram baixados em .csv na página Dados Abertos CAPES - Grupo: Catálogo de Teses e Dissertações
+# https://dadosabertos.capes.gov.br/dataset/
+# Arquivos armazenados em 01_dados/01_dados_originais
+#
+
+banco1321 <- purrr::map_dfr(
+  list.files(
+    path = "dados/catalogo/capes1321",
+    pattern = "capes",
+    full.names = TRUE
+  ),
+  readr::read_csv2,
+  locale = readr::locale(encoding = "ISO-8859-1"),
+  na = c("NI", "NA"),
+  show_col_types = FALSE
+)
+
+teste <- read_csv2(
+  "01_dados/01_dados_originais/dados_2012.csv",
+  locale(encoding = "ISO-8859-1")
+)
