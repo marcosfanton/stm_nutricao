@@ -44,7 +44,6 @@ banco1324 <- list.files(
 vars1112 <- c(
   "AnoBase",
   "NomeIes",
-  "CodigoPrograma",
   "TituloTese",
   "Nivel",
   "PalavrasChave",
@@ -54,10 +53,10 @@ vars1112 <- c(
   "NumeroPaginas",
   "ResumoTese"
 )
+
 vars1324 <- c(
   "AN_BASE",
   "NM_ENTIDADE_ENSINO",
-  "CD_PROGRAMA",
   "NM_PRODUCAO",
   "NM_SUBTIPO_PRODUCAO",
   "NM_GRAU_ACADEMICO",
