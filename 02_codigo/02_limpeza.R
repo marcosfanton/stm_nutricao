@@ -5,7 +5,6 @@
 library(tidyverse)
 library(here)
 library(stringi)
-library(textclean)
 
 # Importação e unificação dos bancos de 2011-2024 --------------------------------------------------------
 # Todos os bancos foram baixados em .csv na página Dados Abertos CAPES - Grupo: Catálogo de Teses e Dissertações
@@ -96,11 +95,10 @@ catalogo_raw <- catalogo_raw |>
     NM_ENTIDADE_ENSINO = NM_ENTIDADE_ENSINO |>
       dplyr::replace_values(
         c(
-          "UNIVERSIDADE DE SÃO PAULO (RIBEIRÃO PRETO)",
           "UNIVERSIDADE DE SÃO PAULO - CAMPUS RIBEIRÃO PRETO",
           "UNIVERSIDADE DE SÃO PAULO ( RIBEIRÃO PRETO )"
         ) ~
-          "UNIVERSIDADE DE SÃO PAULO",
+          "UNIVERSIDADE DE SÃO PAULO (RIBEIRÃO PRETO)",
         c(
           "UNIVERSIDADE ESTADUAL DE CAMPINAS (LIMEIRA)",
           "UNIVERSIDADE ESTADUAL DE CAMPINAS - CAMPUS LIMEIRA",
@@ -143,10 +141,15 @@ limpeza_texto <- function(texto) {
 catalogo_raw <- catalogo_raw |>
   mutate(across(c(DS_PALAVRA_CHAVE, DS_RESUMO), limpeza_texto))
 
-# Exclusão de Mestrados Profissionais e variáveis irrelevantes
+# Exclusão de Mestrado Profissional, Resumos Insuficientes (<15 palavras),
+# variáveis irrelevantes e inclusão da variável de identidade de docs (DOC_ID)
 catalogo_raw <- catalogo_raw |>
-  dplyr::filter_out(NM_GRAU_ACADEMICO == "MESTRADO PROFISSIONAL") |>
-  dplyr::select(-c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO))
+  dplyr::filter_out(NM_GRAU_ACADEMICO == "mestrado profissional") |> #n:
+  dplyr::filter_out(
+    stringi::stri_count_words(catalogo_raw$DS_RESUMO) < 10
+  ) |> #n:
+  dplyr::select(-c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO)) |>
+  dplyr::mutate(DOC_ID = row_number())
 
 # Salvar banco em .RDS -- n: 5.413
 saveRDS(catalogo_raw, file = "01_dados/catalogo_limpo.RDS")
