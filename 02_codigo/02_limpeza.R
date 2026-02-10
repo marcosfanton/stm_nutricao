@@ -166,5 +166,9 @@ catalogo_limpo <- catalogo_limpo |>
   dplyr::select(-c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO, CD_PROGRAMA)) |>
   dplyr::mutate(DOC_ID = row_number())
 
+# Salvar banco em .csv -- n: 5287
+catalogo_limpo |>
+  readr::write_csv("01_dados/catalogo_limpo.csv")
+
 # Salvar banco em .RDS -- n: 5.287
 saveRDS(catalogo_limpo, file = "01_dados/catalogo_limpo.RDS")
