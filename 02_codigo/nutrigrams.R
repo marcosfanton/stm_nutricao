@@ -1,4 +1,7 @@
-# Banco para STM ####
+# Pacotes ####
+library(tidyverse)
+library(here)
+library(tidytext)
 
 # Abrir dados
 dados <- readRDS(file = "01_dados/catalogo_limpo.RDS")
@@ -21,14 +24,11 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
     )
 }
 
+# NGRAMS ####
 
-teste <- dados |> limpeza_texto(DS_RESUMO)
-
-
-stop_pt <- tidytext::get_stopwords("pt")
-bidados <- dados |>
-  tidytext::unnest_tokens(bigram, ds_resumo, token = "ngrams", n = 2) # Formação da variável bigram com todas palavras do resumo
-bidados_sep <- bidados |>
+bigrams <- dados |>
+  tidytext::unnest_tokens(BIGRAM, DS_RESUMO, token = "ngrams", n = 2) # Formação da variável bigram com todas palavras do resumo
+bigrams_sep <- bidados |>
   tidyr::separate(bigram, into = c("word1", "word2"), sep = " ") # Separação dos bigrams para remoção de stopwords
 filobigrams <- bidados_sep |>
   dplyr::filter(
@@ -40,15 +40,28 @@ filobigrams <- bidados_sep |>
   dplyr::filter(n >= 29) # Filtragem de bigrams com 29 ou mais ocorrências (n = 1019)
 
 
+bigrams_clean <- catalogo_clean |>
+  unnest_tokens(bigram, DS_RESUMO_CLEAN, token = "ngrams", n = 2) |>
+  count(bigram, sort = TRUE)
+
+
 # Manipulação de texto (variável: DS_RESUMO)
 # Função para limpeza
 limpeza_texto <- function(texto) {
   texto |>
+    map_chr(~ .x[!.x %in% stopwords_list] |> paste(collapse = " ")) |> 
     str_to_lower() |> # caixa baixa
     str_remove_all("[[:punct:]]") |> # remove pontuação
     stri_trans_general("Latin-ASCII") |> # remove acentos
     str_squish() # remove espaços extras
 }
+
+  texto |>
+    str_to_lower() |>
+    str_split("\\s+") |>
+    map_chr(~ .x[!.x %in% stopwords_list] |> paste(collapse = " "))
+}
+
 
 # Limpeza do texto
 catalogo_raw <- catalogo_raw |>
