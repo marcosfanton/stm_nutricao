@@ -42,6 +42,7 @@ banco1324 <- list.files(
 vars1112 <- c(
   "AnoBase",
   "NomeIes",
+  "CodigoPrograma",
   "TituloTese",
   "Nivel",
   "PalavrasChave",
@@ -55,6 +56,7 @@ vars1112 <- c(
 vars1324 <- c(
   "AN_BASE",
   "NM_ENTIDADE_ENSINO",
+  "CD_PROGRAMA",
   "NM_PRODUCAO",
   "NM_SUBTIPO_PRODUCAO",
   "NM_GRAU_ACADEMICO",
@@ -90,22 +92,32 @@ saveRDS(catalogo1124, file = "01_dados/catalogo_raw.RDS")
 catalogo_raw <- readRDS(file = "01_dados/catalogo_raw.RDS")
 
 # Recodificação do nome das IES
+# Adição de UFPE(CAV), UNIFESP (RP), UNICAMP(LM), UFPB, UFCSPA
 catalogo_raw <- catalogo_raw |>
+  mutate(
+    NM_ENTIDADE_ENSINO = case_when(
+      CD_PROGRAMA == "25001019028P2" &
+        str_detect(NM_ENTIDADE_ENSINO, "UNIVERSIDADE FEDERAL DE PERNAMBUCO") ~
+        "UNIVERSIDADE FEDERAL DE PERNAMBUCO (CAV)",
+      .default = NM_ENTIDADE_ENSINO
+    )
+  ) |>
   mutate(
     NM_ENTIDADE_ENSINO = NM_ENTIDADE_ENSINO |>
       dplyr::replace_values(
         c(
           "UNIVERSIDADE DE SÃO PAULO - CAMPUS RIBEIRÃO PRETO",
-          "UNIVERSIDADE DE SÃO PAULO ( RIBEIRÃO PRETO )"
+          "UNIVERSIDADE DE SÃO PAULO ( RIBEIRÃO PRETO )",
+          "UNIVERSIDADE DE SÃO PAULO (RIBEIRÃO PRETO)"
         ) ~
-          "UNIVERSIDADE DE SÃO PAULO (RIBEIRÃO PRETO)",
+          "UNIVERSIDADE DE SÃO PAULO (RP)",
         c(
           "UNIVERSIDADE ESTADUAL DE CAMPINAS (LIMEIRA)",
           "UNIVERSIDADE ESTADUAL DE CAMPINAS - CAMPUS LIMEIRA",
           "UNIVERSIDADE ESTADUAL DE CAMPINAS/LIMEIRA",
           "UNIVERSIDADE ESTADUAL DE CAMPINAS ( LIMEIRA )"
         ) ~
-          "UNIVERSIDADE ESTADUAL DE CAMPINAS",
+          "UNIVERSIDADE ESTADUAL DE CAMPINAS (LM)",
         c(
           "UNIVERSIDADE FEDERAL DA PARAÍBA (JOÃO PESSOA)",
           "UNIVERSIDADE FEDERAL DA PARAÍBA - CAMPUS JOÃO PESSOA",
@@ -144,11 +156,12 @@ catalogo_raw <- catalogo_raw |>
 # Exclusão de Mestrado Profissional, Resumos Insuficientes (<15 palavras),
 # variáveis irrelevantes e inclusão da variável de identidade de docs (DOC_ID)
 catalogo_raw <- catalogo_raw |>
+  dplyr::filter_out(CD_PROGRAMA == "25001019075P0") |>
   dplyr::filter_out(NM_GRAU_ACADEMICO == "mestrado profissional") |> #n:
   dplyr::filter_out(
     stringi::stri_count_words(catalogo_raw$DS_RESUMO) < 10
   ) |> #n:
-  dplyr::select(-c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO)) |>
+  dplyr::select(-c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO, CD_PROGRAMA)) |>
   dplyr::mutate(DOC_ID = row_number())
 
 # Salvar banco em .RDS -- n: 5.413
