@@ -155,11 +155,11 @@ catalogo_raw <- catalogo_raw |>
 
 # Exclusão de Mestrado Profissional, Resumos Insuficientes (<15 palavras),
 # variáveis irrelevantes e inclusão da variável de identidade de docs (DOC_ID)
-catalogo_raw <- catalogo_raw |>
-  dplyr::filter_out(CD_PROGRAMA == "25001019075P0") |>
-  dplyr::filter_out(NM_GRAU_ACADEMICO == "mestrado profissional") |> #n:
+catalogo_limpo <- catalogo_raw |>
+  dplyr::filter_out(CD_PROGRAMA == "25001019075P0") |> # n: 30
+  dplyr::filter_out(NM_GRAU_ACADEMICO == "MESTRADO PROFISSIONAL") |> # n: 325
   dplyr::filter_out(
-    stringi::stri_count_words(catalogo_raw$DS_RESUMO) < 10
+    stringi::stri_count_words(DS_RESUMO) < ??????? # n: ??
   ) |> #n:
   dplyr::select(-c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO, CD_PROGRAMA)) |>
   dplyr::mutate(DOC_ID = row_number())
