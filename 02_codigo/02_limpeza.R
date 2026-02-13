@@ -5,6 +5,7 @@
 library(tidyverse)
 library(here)
 library(stringi)
+library(textcat)
 
 # Importação e unificação dos bancos de 2011-2024 --------------------------------------------------------
 # Todos os bancos foram baixados em .csv na página Dados Abertos CAPES - Grupo: Catálogo de Teses e Dissertações
@@ -141,12 +142,12 @@ catalogo_raw <- catalogo_raw |>
 
 # Exclusão de Mestrado Profissional (n: 355)
 # variáveis irrelevantes e inclusão da variável de identidade de docs (DOC_ID)
-catalogo_limpo <- catalogo_raw |>
+catalogo_raw <- catalogo_raw |>
   dplyr::filter_out(CD_PROGRAMA == "25001019075P0") |> # n: 30
   dplyr::filter_out(NM_GRAU_ACADEMICO == "MESTRADO PROFISSIONAL") # n: 325
 
 # Criação de banco com resumos excluídos (n: 96)
-resumos_50 <- catalogo_limpo |>
+resumos_50 <- catalogo_raw |>
   dplyr::filter_out(
     stringi::stri_count_words(DS_RESUMO) > 50
   )
@@ -155,19 +156,30 @@ resumos_50 |>
   readr::write_csv("01_dados/resumos_excluidos.csv")
 
 # Excluir resumos insuficientes (n: 96)
-catalogo_limpo <- catalogo_limpo |>
+catalogo_raw <- catalogo_raw |>
   dplyr::filter_out(
     stringi::stri_count_words(DS_RESUMO) < 50
   ) |>
   dplyr::filter_out(stri_detect_fixed(
     DS_RESUMO,
     "SILVA, DANIELA MARTINS DA"
-  )) |>
-  dplyr::select(-c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO, CD_PROGRAMA)) |>
-  dplyr::mutate(DOC_ID = row_number())
+  ))
 
-# Salvar banco em .csv -- n: 5287
-catalogo_limpo |>
+# Excluir resumos em inglês (n: 6)
+catalogo_raw <- catalogo_raw |>
+  mutate(
+    IDIOMA = textcat::textcat(DS_RESUMO)
+  ) |>
+  dplyr::filter_out(IDIOMA == "english")
+
+# Catálogo Limpo
+catalogo_limpo <- catalogo_raw |>
+  dplyr::select(
+    -c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO, CD_PROGRAMA, IDIOMA)
+  ) |>
+
+  # Salvar banco em .csv -- n: 5287
+  catalogo_limpo |>
   readr::write_csv("01_dados/catalogo_limpo.csv")
 
 # Salvar banco em .RDS -- n: 5.287
