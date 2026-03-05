@@ -43,7 +43,7 @@ bigrams_sep <- bidados |>
 bigrams <- bigrams_sep |>
   tidyr::unite("bigram", c(word1, word2), sep = " ") |> # Unificação dos bigrams novamente
   dplyr::count(bigram, sort = TRUE) |> # Contagem da frequência absoluta de cada bigram
-  dplyr::filter(n >= 50)
+  dplyr::filter(n >= 25) # Bigram com (ou mais de) 25 ocorrências
 
 # Trigrams
 tridados <- dados |>
@@ -54,8 +54,7 @@ trigrams_sep <- tridados |>
 trigrams <- trigrams_sep |>
   tidyr::unite("trigram", c(word1, word2, word3), sep = " ") |> # Unificação dos bigrams novamente
   dplyr::count(trigram, sort = TRUE) |> # Contagem da frequência absoluta de cada bigram
-  dplyr::filter(n >= 50)
-
+  dplyr::filter(n >= 25) # Trigram com (ou mais de) 25 ocorrências
 
 # Tetragrams
 n_dados <- dados |>
@@ -75,7 +74,7 @@ n_grams_sep <- n_dados |>
 n_grams <- n_grams_sep |>
   tidyr::unite("n_gram", c(word1, word2, word3, word4), sep = " ") |> # Unificação dos bigrams novamente
   dplyr::count(n_gram, sort = TRUE) |> # Contagem da frequência absoluta de cada bigram
-  dplyr::filter(n >= 20)
+  dplyr::filter(n >= 10) # Tetragram com (ou mais de) 10 ocorrências
 
 
 # Tetragrams

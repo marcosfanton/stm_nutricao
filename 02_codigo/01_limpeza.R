@@ -146,15 +146,6 @@ catalogo_raw <- catalogo_raw |>
   dplyr::filter_out(CD_PROGRAMA == "25001019075P0") |> # n: 30
   dplyr::filter_out(NM_GRAU_ACADEMICO == "MESTRADO PROFISSIONAL") # n: 325
 
-# Criação de banco com resumos excluídos (n: 96)
-resumos_50 <- catalogo_raw |>
-  dplyr::filter_out(
-    stringi::stri_count_words(DS_RESUMO) > 50
-  )
-
-resumos_50 |>
-  readr::write_csv("01_dados/resumos_excluidos.csv")
-
 # Excluir resumos insuficientes (n: 96)
 catalogo_raw <- catalogo_raw |>
   dplyr::filter_out(
@@ -165,22 +156,36 @@ catalogo_raw <- catalogo_raw |>
     "SILVA, DANIELA MARTINS DA"
   ))
 
-# Excluir resumos em inglês (n: 6)
+# Excluir resumos em inglês (n: 8)
 catalogo_raw <- catalogo_raw |>
   mutate(
     IDIOMA = textcat::textcat(DS_RESUMO)
   ) |>
-  dplyr::filter_out(IDIOMA == "english")
+  dplyr::filter_out(IDIOMA == "english") |> # 6
+  dplyr::filter_out(
+    # 2 resumos erroneamente rotulados com idioma alemão ('german')
+    AN_BASE == 2017 &
+      NM_ENTIDADE_ENSINO == "UNIVERSIDADE FEDERAL DA BAHIA" &
+      NM_PRODUCAO ==
+        "OBESIDADE SARCOPÊNICA EM IDOSAS DE UMA UNIVERSIDADE ABERTA À TERCEIRA IDADE"
+  ) |>
+  dplyr::filter_out(
+    AN_BASE == 2024 &
+      NM_ENTIDADE_ENSINO == "UNIVERSIDADE FEDERAL DO RIO DE JANEIRO" &
+      NM_PRODUCAO ==
+        "METABOLÔMICA COMO FERRAMENTA PARA CARACTERIZAÇÃO DAS ALTERAÇÕES METABÓLICAS CAUSADAS PELA COVID-19 SEVERA EM COORTES PROSPECTIVAS DE INDIVÍDUOS ADULTOS E GESTANTES"
+  )
 
 # Catálogo Limpo
 catalogo_limpo <- catalogo_raw |>
   dplyr::select(
     -c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO, CD_PROGRAMA, IDIOMA)
   ) |>
+  dplyr::mutate(DOC_ID = row_number())
 
-  # Salvar banco em .csv -- n: 5287
-  catalogo_limpo |>
+# Salvar banco em .csv -- n: 5284
+catalogo_limpo |>
   readr::write_csv("01_dados/catalogo_limpo.csv")
 
-# Salvar banco em .RDS -- n: 5.287
+# Salvar banco em .RDS -- n: 5.284
 saveRDS(catalogo_limpo, file = "01_dados/catalogo_limpo.RDS")

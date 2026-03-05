@@ -1,4 +1,9 @@
 # Banco para STM ####
+# Pacotes
+library(tidyverse)
+library(here)
+library(stringi)
+library(textcat)
 
 # Abrir dados
 dados <- readRDS(file = "01_dados/catalogo_limpo.RDS")
