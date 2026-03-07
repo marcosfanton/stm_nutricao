@@ -3,7 +3,7 @@ library(tidyverse)
 library(here)
 library(tidytext)
 
-# Abrir dados
+# Abrir dados (n: 5.284)
 dados <- readRDS(file = "01_dados/catalogo_limpo.RDS")
 
 # Limpeza do texto ####
@@ -30,20 +30,40 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
 # Limpeza das colunas DS_PALAVRA_CHAVE, DS_RESUMO
 dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, DS_RESUMO))
 
-# NGRAMS ####
+# NGRAMS VIA PMI (Point Wise Mutual Information)####
 # Stopwords em PT
 stop_pt <- tidytext::get_stopwords("pt")
 
+# Tokens totais
+unigrams <- dados |>
+  tidytext::unnest_tokens(word, DS_RESUMO) |>
+  count(word, name = "n_uni")
+
+# Contagem de tokens totais
+N_unigram <- sum(unigrams$n_uni)
+
 # Bigrams
-bidados <- dados |>
-  select(DOC_ID, DS_RESUMO) |>
-  tidytext::unnest_tokens(output = bigram, DS_RESUMO, token = "ngrams", n = 2) # Formação da variável bigram com todas palavras do resumo
-bigrams_sep <- bidados |>
-  tidyr::separate(bigram, into = c("word1", "word2"), sep = " ") # Separação dos bigrams para remoção de stopwords
-bigrams <- bigrams_sep |>
-  tidyr::unite("bigram", c(word1, word2), sep = " ") |> # Unificação dos bigrams novamente
-  dplyr::count(bigram, sort = TRUE) |> # Contagem da frequência absoluta de cada bigram
-  dplyr::filter(n >= 25) # Bigram com (ou mais de) 25 ocorrências
+bigrams <- dados |>
+  tidytext::unnest_tokens(
+    output = bigram,
+    DS_RESUMO,
+    token = "ngrams",
+    n = 2
+  ) |> # Formação da variável bigram com todas palavras do resumo
+  tidyr::separate(bigram, into = c("word1", "word2"), sep = " ") |> # Separação dos bigrams para remoção de stopwords
+  dplyr::count(word1, word2, sort = TRUE)
+
+pmi_bigrams <- bigrams |>
+  filter(n >= 10) |>
+  left_join(unigrams, by = c("word1" = "word")) |>
+  left_join(unigrams, by = c("word2" = "word"), suffix = c("_w1", "_w2")) |>
+  mutate(
+    pmi = log2(
+      (n / N_unigram) / ((n_uni_w1 / N_unigram) * (n_uni_w2 / N_unigram))
+    )
+  ) |>
+  filter(pmi >= 5) |>
+  arrange(desc(pmi))
 
 # Trigrams
 tridados <- dados |>
@@ -54,7 +74,7 @@ trigrams_sep <- tridados |>
 trigrams <- trigrams_sep |>
   tidyr::unite("trigram", c(word1, word2, word3), sep = " ") |> # Unificação dos bigrams novamente
   dplyr::count(trigram, sort = TRUE) |> # Contagem da frequência absoluta de cada bigram
-  dplyr::filter(n >= 25) # Trigram com (ou mais de) 25 ocorrências
+  dplyr::filter(n >= 100) # Trigram com (ou mais de) 25 ocorrências
 
 # Tetragrams
 n_dados <- dados |>

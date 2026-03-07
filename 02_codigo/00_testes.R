@@ -66,3 +66,8 @@ teste <- catalogo_raw |>
   mutate(
     IDIOMA = cld3::detect_language(DS_RESUMO)
   )
+
+# QUANTEDA ####
+corp <- corpus(dados, text_field = "DS_RESUMO", docid_field = "DOC_ID")
+toks <- tokens(corp, remove_punct = TRUE, remove_numbers = TRUE)
+cols <- textstat_collocations(toks, method = "pmi", min_count = 10)
