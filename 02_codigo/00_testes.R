@@ -71,3 +71,49 @@ teste <- catalogo_raw |>
 corp <- corpus(dados, text_field = "DS_RESUMO", docid_field = "DOC_ID")
 toks <- tokens(corp, remove_punct = TRUE, remove_numbers = TRUE)
 cols <- textstat_collocations(toks, method = "pmi", min_count = 10)
+
+
+limpeza_texto <- function(
+  dados,
+  variavel,
+  idioma = "pt",
+  letras_relevantes = c("d", "c", "b", "a", "e", "k"),
+  numeros_relevantes = c("19")
+) {
+  stopwords_pt <- stopwords::stopwords(idioma) |> # dicionário de stopwords
+    stringr::str_to_lower() |>
+    stringi::stri_trans_general("Latin-ASCII")
+
+  dados |>
+    dplyr::mutate(
+      across(
+        {{ variavel }},
+        ~ .x |>
+          stringr::str_to_lower() |>
+          stringi::stri_trans_general("Latin-ASCII") |>
+          stringr::str_replace_all("[[:punct:]]", " ") |>
+          stringr::str_squish() |>
+          stringr::str_split("\\s+") |>
+          purrr::map_chr(
+            ~ {
+              tokens <- .x
+
+              # remove stopwords
+              tokens <- tokens[!tokens %in% stopwords_pt]
+
+              # remove números exceto relevantes
+              tokens <- tokens[
+                !grepl("^\\d+$", tokens) | tokens %in% numeros_relevantes
+              ]
+
+              # remove tokens de 1 letra exceto relevantes
+              tokens <- tokens[
+                nchar(tokens) > 1 | tokens %in% letras_relevantes
+              ]
+
+              paste(tokens, collapse = " ")
+            }
+          )
+      )
+    )
+}

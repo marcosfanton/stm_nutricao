@@ -6,10 +6,11 @@ library(tidytext)
 # Abrir dados (n: 5.284)
 dados <- readRDS(file = "01_dados/catalogo_limpo.RDS")
 
-# Limpeza do texto ####
-# Função de Limpeza de texto ####
+
+# Função de limpeza de texto ####
 limpeza_texto <- function(dados, variavel, idioma = "pt") {
   stopwords_pt <- stopwords::stopwords(idioma) |>
+    stringr::str_to_lower() |>
     stringi::stri_trans_general("Latin-ASCII")
 
   dados |>
@@ -30,26 +31,29 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
 # Limpeza das colunas DS_PALAVRA_CHAVE, DS_RESUMO
 dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, DS_RESUMO))
 
-# NGRAMS VIA PMI (Point Wise Mutual Information)####
-# Stopwords em PT
-stop_pt <- tidytext::get_stopwords("pt")
+# Trigrams
+trigrams <- dados |>
+  tidytext::unnest_tokens(trigram, DS_RESUMO, token = "ngrams", n = 3) |>
+  tidyr::separate(trigram, into = c("word1", "word2", "word3"), sep = " ") |>
+  dplyr::count(word1, word2, word3, sort = TRUE) |>
+  dplyr::filter(n >= 50) |>
+  tidyr::unite(trigram, word1, word2, word3, sep = "_")
 
-# Tokens totais
-unigrams <- dados |>
-  tidytext::unnest_tokens(word, DS_RESUMO) |>
-  count(word, name = "n_uni")
+# Bigrams
+bigrams <- dados |>
+  tidytext::unnest_tokens(bigram, DS_RESUMO, token = "ngrams", n = 2) |>
+  tidyr::separate(bigram, into = c("word1", "word2"), sep = " ") |>
+  dplyr::count(word1, word2, sort = TRUE) |>
+  dplyr::filter(n >= 50) |>
+  tidyr::unite(bigram, word1, word2, sep = "_")
+
 
 # Contagem de tokens totais
 N_unigram <- sum(unigrams$n_uni)
 
 # Bigrams
 bigrams <- dados |>
-  tidytext::unnest_tokens(
-    output = bigram,
-    DS_RESUMO,
-    token = "ngrams",
-    n = 2
-  ) |> # Formação da variável bigram com todas palavras do resumo
+  tidytext::unnest_tokens(bigram, DS_RESUMO, "ngrams", n = 2) |> # Formação da variável bigram com todas palavras do resumo
   tidyr::separate(bigram, into = c("word1", "word2"), sep = " ") |> # Separação dos bigrams para remoção de stopwords
   dplyr::count(word1, word2, sort = TRUE)
 
