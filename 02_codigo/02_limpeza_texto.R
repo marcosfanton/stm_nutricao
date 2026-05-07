@@ -31,6 +31,7 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
 # Limpeza das colunas DS_PALAVRA_CHAVE, DS_RESUMO
 dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, DS_RESUMO))
 
+# NGRAMS ####
 # Tetragrams
 tetragrams <- dados |>
   tidytext::unnest_tokens(tetragram, DS_RESUMO, token = "ngrams", n = 4) |>
@@ -41,12 +42,11 @@ tetragrams <- dados |>
   ) |>
   dplyr::count(word1, word2, word3, word4, sort = TRUE) |>
   dplyr::filter(n >= 50) |>
-  tidyr::unite(tetragram, word1, word2, word3, word4, sep = "_")
+  tidyr::unite(tetragram, word1, word2, word3, word4, sep = " ")
 
 # Salvar arquivo com trigrams
 tetragrams |>
   readr::write_csv("01_dados/tetragrams.csv")
-
 
 # Trigrams
 trigrams <- dados |>
@@ -54,7 +54,7 @@ trigrams <- dados |>
   tidyr::separate(trigram, into = c("word1", "word2", "word3"), sep = " ") |>
   dplyr::count(word1, word2, word3, sort = TRUE) |>
   dplyr::filter(n >= 50) |>
-  tidyr::unite(trigram, word1, word2, word3, sep = "_")
+  tidyr::unite(trigram, word1, word2, word3, sep = " ")
 
 # Salvar arquivo com trigrams
 trigrams |>
@@ -66,13 +66,13 @@ bigrams <- dados |>
   tidyr::separate(bigram, into = c("word1", "word2"), sep = " ") |>
   dplyr::count(word1, word2, sort = TRUE) |>
   dplyr::filter(n >= 50) |>
-  tidyr::unite(bigram, word1, word2, sep = "_")
+  tidyr::unite(bigram, word1, word2, sep = " ")
 
 # Salvar arquivo com bigrams
 bigrams |>
   readr::write_csv("01_dados/bigrams.csv")
 
-# Análise de expressões acadêmicas por TF-IDF ####
+# Análise de expressões acadêmicas por TF-IDF
 tfidf <- dados |>
   tidytext::unnest_tokens(word, DS_RESUMO) |>
   dplyr::filter(
@@ -100,7 +100,40 @@ tfidf_corpus <- tfidf |>
 tfidf_corpus |>
   readr::write_csv("01_dados/tfidf_corpus.csv")
 
+# Dicionário de NGRAMS ####
+ngrams <- read.csv("01_dados/nutrigrams.csv")
 
-# Salvar arquivo com termos acadêmicos frequentes
-bigrams |>
-  readr::write_csv("01_dados/bigrams.csv")
+n_grams <- ngrams |>
+  transmute(
+    padrao = paste0("\\b", grams, "\\b"),
+    substituicao = str_replace_all(grams, " ", "_")
+  )
+
+dicionario_grams <- set_names(n_grams$substituicao, n_grams$padrao)
+
+# Substituição dos NGRAMS na variável DS_RESUMO
+dados <- dados |>
+  mutate(
+    DS_RESUMO = str_replace_all(DS_RESUMO, dicionario_grams)
+  )
+
+# Banco para STM ####
+dados <- dados |>
+  tidytext::unnest_tokens(output = WORD, input = DS_RESUMO, drop = TRUE) |>
+  select(DOC_ID, NM_PRODUCAO, WORD, AN_BASE)
+
+# Remoção de números
+dados <- dados |>
+  filter_out(
+    str_detect(WORD, "^\\d+$")
+  )
+
+# Preparação do banco
+
+# Exclusão de números e palavras com menos de 3 caracteres
+palavras_raras <- dados |>
+  distinct(DOC_ID, WORD) |>
+  dplyr::count(WORD, name = "doc_freq") |>
+  dplyr::filter(doc_freq <= 2)
+
+anti_join(palavras_ras, by = "WORD")
