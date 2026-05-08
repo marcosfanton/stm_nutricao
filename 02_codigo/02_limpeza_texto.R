@@ -27,7 +27,6 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
       )
     )
 }
-
 # Limpeza das colunas DS_PALAVRA_CHAVE, DS_RESUMO
 dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, DS_RESUMO))
 
@@ -55,7 +54,6 @@ trigrams <- dados |>
   dplyr::count(word1, word2, word3, sort = TRUE) |>
   dplyr::filter(n >= 50) |>
   tidyr::unite(trigram, word1, word2, word3, sep = " ")
-
 # Salvar arquivo com trigrams
 trigrams |>
   readr::write_csv("01_dados/trigrams.csv")
@@ -67,7 +65,6 @@ bigrams <- dados |>
   dplyr::count(word1, word2, sort = TRUE) |>
   dplyr::filter(n >= 50) |>
   tidyr::unite(bigram, word1, word2, sep = " ")
-
 # Salvar arquivo com bigrams
 bigrams |>
   readr::write_csv("01_dados/bigrams.csv")
@@ -81,7 +78,6 @@ tfidf <- dados |>
   dplyr::count(DOC_ID, word, sort = TRUE) |>
   tidytext::bind_tf_idf(word, DOC_ID, n) |>
   dplyr::arrange(desc(tf_idf))
-
 # Salvar arquivo com análise TF-IDF
 tfidf |>
   readr::write_csv("01_dados/tfidf.csv")
@@ -95,7 +91,6 @@ tfidf_corpus <- tfidf |>
     .by = word
   ) |>
   dplyr::arrange(desc(freq))
-
 # Salvar arquivo com análise TF-IDF
 tfidf_corpus |>
   readr::write_csv("01_dados/tfidf_corpus.csv")
@@ -128,12 +123,5 @@ dados <- dados |>
     str_detect(WORD, "^\\d+$")
   )
 
-# Preparação do banco
-
-# Exclusão de números e palavras com menos de 3 caracteres
-palavras_raras <- dados |>
-  distinct(DOC_ID, WORD) |>
-  dplyr::count(WORD, name = "doc_freq") |>
-  dplyr::filter(doc_freq <= 2)
-
-anti_join(palavras_ras, by = "WORD")
+# Salvar banco de dados
+saveRDS(dados, file = "01_dados/dados_prestm.RDS")

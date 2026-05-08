@@ -119,7 +119,6 @@ limpeza_texto <- function(
 }
 
 
-
 # Contagem de tokens totais
 N_unigram <- sum(unigrams$n_uni)
 
@@ -192,3 +191,34 @@ n_grams <- n_grams_sep |>
   tidyr::unite("n_gram", c(word1, word2, word3, word4, word5), sep = " ") |> # Unificação dos bigrams novamente
   dplyr::count(n_gram, sort = TRUE) |> # Contagem da frequência absoluta de cada bigram
   dplyr::filter(n >= 20)
+
+# STM - PACOTE ####
+dados_stm <- readRDS(file = "01_dados/dados_pre-stm.RDS")
+
+
+processed <- textProcessor(dados$DS_RESUMO, metadata = dados_teste)
+out <- prepDocuments(processed$documents, processed$vocab, processed$meta)
+docs <- out$documents
+vocab <- out$vocab
+meta <- out$meta
+
+stm_nutricao <- stm(
+  documents = out$documents,
+  vocab = out$vocab,
+  K = 0,
+  prevalence = ~AN_BASE,
+  max.em.its = 75,
+  data = out$meta,
+  init.type = "Spectral"
+)
+
+storage <- searchK(
+  out$documents,
+  out$vocab,
+  K = c(60, 70, 80, 90, 100),
+  N = 500,
+  prevalence = ~AN_BASE,
+  data = meta,
+  init.type = "Spectral",
+)
+plot(storage)
