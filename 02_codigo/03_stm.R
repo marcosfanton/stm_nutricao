@@ -71,7 +71,7 @@ k_result |>
 # Modelo STM ####
 stm_nutricao2 <- stm(
   dados,
-  K = 60,
+  K = 70,
   prevalence = ~AN_BASE,
   seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
   data = covars,

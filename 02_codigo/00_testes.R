@@ -204,14 +204,14 @@ meta <- out$meta
 stm_nutricao1 <- stm(
   documents = out$documents,
   vocab = out$vocab,
-  K = 60,
+  K = 70,
   prevalence = ~AN_BASE,
   seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
   data = out$meta,
   init.type = "Spectral"
 )
 
-topics <- labelTopics(stm_nutricao1, n = 10)
+topics <- labelTopics(stm_nutricao2, n = 10)
 
 df_topics <- data.frame(
   topic = topics$topicnums,
@@ -220,7 +220,7 @@ df_topics <- data.frame(
 )
 
 df_topics |>
-  readr::write_csv("01_dados/TESTE60_solo.csv")
+  readr::write_csv("01_dados/TESTE70_solo.csv")
 
 storage <- searchK(
   out$documents,
