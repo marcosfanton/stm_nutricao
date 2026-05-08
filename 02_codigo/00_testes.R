@@ -195,30 +195,43 @@ n_grams <- n_grams_sep |>
 # STM - PACOTE ####
 dados_stm <- readRDS(file = "01_dados/dados_pre-stm.RDS")
 
-
-processed <- textProcessor(dados$DS_RESUMO, metadata = dados_teste)
+processed <- textProcessor(dados$DS_RESUMO, metadata = dados_stm)
 out <- prepDocuments(processed$documents, processed$vocab, processed$meta)
 docs <- out$documents
 vocab <- out$vocab
 meta <- out$meta
 
-stm_nutricao <- stm(
+stm_nutricao1 <- stm(
   documents = out$documents,
   vocab = out$vocab,
-  K = 0,
+  K = 60,
   prevalence = ~AN_BASE,
-  max.em.its = 75,
+  seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
   data = out$meta,
   init.type = "Spectral"
 )
+
+topics <- labelTopics(stm_nutricao1, n = 10)
+
+df_topics <- data.frame(
+  topic = topics$topicnums,
+  frex = apply(topics$frex, 1, paste, collapse = ", "),
+  highest_prob = apply(topics$prob, 1, paste, collapse = ", ")
+)
+
+df_topics |>
+  readr::write_csv("01_dados/TESTE60_solo.csv")
 
 storage <- searchK(
   out$documents,
   out$vocab,
   K = c(60, 70, 80, 90, 100),
-  N = 500,
   prevalence = ~AN_BASE,
   data = meta,
   init.type = "Spectral",
 )
-plot(storage)
+
+
+ggplot(storage$results, aes(x = K, y = heldout)) +
+  geom_line() +
+  geom_point()

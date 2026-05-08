@@ -9,7 +9,7 @@ library(furrr)
 library(stm)
 
 # Abrir dados
-dados_stm <- readRDS(file = "01_dados/dados_pre-stm.RDS")
+dados_stm <- readRDS(file = "01_dados/dados_prestm.RDS")
 
 # Banco para STM
 dados <- dados_stm |>
@@ -23,8 +23,7 @@ covars <- dados_stm |>
   dplyr::distinct(DOC_ID, AN_BASE)
 
 #
-plan(multisession)
-muitos_k <- tibble(K = c(40, 50, 60, 70, 80, 90, 100)) |>
+muitos_k <- tibble(K = c(50, 60, 70, 80)) |>
   mutate(
     topic_model = purrr::map(
       K,
@@ -68,3 +67,13 @@ k_result |>
   geom_line(linewidth = 1.5, alpha = 0.9, show.legend = FALSE) +
   theme_classic() +
   facet_wrap(~Metric, scales = "free_y")
+
+# Modelo STM ####
+stm_nutricao2 <- stm(
+  dados,
+  K = 60,
+  prevalence = ~AN_BASE,
+  seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
+  data = covars,
+  init.type = "Spectral"
+)
