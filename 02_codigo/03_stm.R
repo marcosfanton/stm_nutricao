@@ -7,9 +7,12 @@ library(textcat)
 library(future)
 library(furrr)
 library(stm)
+library(tidystm) # Extração de efeitos do modelo
+
 
 # Abrir dados
-dados_stm <- readRDS(file = "01_dados/dados_prestm.RDS")
+dados_stm <- readRDS(file = "01_dados/dados_prestm.RDS") |>
+  filter_out(str_length(WORD) <= 2)
 
 # Banco para STM
 dados <- dados_stm |>
@@ -23,7 +26,7 @@ covars <- dados_stm |>
   dplyr::distinct(DOC_ID, AN_BASE)
 
 #
-muitos_k <- tibble(K = c(50, 60, 70, 80)) |>
+muitos_k <- tibble(K = c(60, 65, 70, 75, 80)) |>
   mutate(
     topic_model = purrr::map(
       K,
@@ -69,7 +72,7 @@ k_result |>
   facet_wrap(~Metric, scales = "free_y")
 
 # Modelo STM ####
-stm_nutricao2 <- stm(
+stm_nutricao <- stm(
   dados,
   K = 70,
   prevalence = ~AN_BASE,
@@ -77,3 +80,14 @@ stm_nutricao2 <- stm(
   data = covars,
   init.type = "Spectral"
 )
+
+# Salvar Tabela
+tabela_topicos <-
+  data.frame(
+    topic = topics$topicnums,
+    frex = apply(topics$frex, 1, paste, collapse = ", "),
+    highest_prob = apply(topics$prob, 1, paste, collapse = ", ")
+  )
+
+df_topics |>
+  readr::write_csv("01_dados/TESTE70_solo.csv")
