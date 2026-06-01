@@ -7,8 +7,8 @@ library(textcat)
 library(future)
 library(furrr)
 library(stm)
-library(tidystm) # Extração de efeitos do modelo
-
+library(tidyr)
+library(tidytext)
 
 # Abrir dados
 dados_stm <- readRDS(file = "01_dados/dados_prestm.RDS")
@@ -80,13 +80,44 @@ stm_nutricao <- stm(
   init.type = "Spectral"
 )
 
-# Salvar Tabela
-tabela_topicos <-
-  data.frame(
-    topic = topics$topicnums,
-    frex = apply(topics$frex, 1, paste, collapse = ", "),
-    highest_prob = apply(topics$prob, 1, paste, collapse = ", ")
+# Salvar Análise
+saveRDS(stm_nutricao, file = "01_dados/stm70.RDS")
+
+# Tabela com Tópico, FREX, BETA, GAMMA ####
+
+# BETA
+beta_tb <- tidy(stm_nutricao, matrix = "beta") |>
+  mutate(topic = topic) |>
+  slice_max(beta, n = 10, by = topic) |>
+  summarise(
+    BETA = paste(term, collapse = ", "),
+    .by = topic
   )
 
-df_topics |>
-  readr::write_csv("01_dados/TESTE70_solo.csv")
+
+# FREX
+frex_tb <- tidy(stm_nutricao, matrix = "frex") |>
+  mutate(topic = topic) |>
+  slice_head(n = 10, by = topic) |>
+  summarise(
+    FREX = paste(term, collapse = ", "),
+    .by = topic
+  )
+
+# GAMMA
+gamma_tb <- tidy(stm_nutricao, matrix = "gamma") |>
+  mutate(topic = topic) |>
+  summarise(
+    GAMMA = mean(gamma),
+    .by = topic
+  )
+
+# TABELA TÓPICOS
+tabela_topicos <- frex_tb |>
+  left_join(beta_tb, by = "topic") |>
+  left_join(gamma_tb, by = "topic") |>
+  arrange(desc(GAMMA))
+
+# Salvar Tabela
+write_csv(tabela_topicos, "01_dados/tabela_70stm.csv")
+saveRDS(tabela_topicos, "01_dados/tabela_70stm.rds")
