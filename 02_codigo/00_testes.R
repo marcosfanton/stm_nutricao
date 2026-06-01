@@ -235,3 +235,30 @@ storage <- searchK(
 ggplot(storage$results, aes(x = K, y = heldout)) +
   geom_line() +
   geom_point()
+
+
+# Análise de expressões acadêmicas por TF-IDF
+tfidf <- dados |>
+  tidytext::unnest_tokens(word, DS_RESUMO) |>
+  dplyr::filter(
+    stringr::str_detect(word, "^[a-záéíóúâêôãõç]{3,}$")
+  ) |>
+  dplyr::count(DOC_ID, word, sort = TRUE) |>
+  tidytext::bind_tf_idf(word, DOC_ID, n) |>
+  dplyr::arrange(desc(tf_idf))
+# Salvar arquivo com análise TF-IDF
+tfidf |>
+  readr::write_csv("01_dados/tfidf.csv")
+
+# Expressões mais características do corpus
+tfidf_corpus <- tfidf |>
+  dplyr::summarise(
+    tf_idf = mean(tf_idf),
+    freq = sum(n),
+    docs = n(),
+    .by = word
+  ) |>
+  dplyr::arrange(desc(freq))
+# Salvar arquivo com análise TF-IDF
+tfidf_corpus |>
+  readr::write_csv("01_dados/tfidf_corpus.csv")

@@ -11,8 +11,7 @@ library(tidystm) # Extração de efeitos do modelo
 
 
 # Abrir dados
-dados_stm <- readRDS(file = "01_dados/dados_prestm.RDS") |>
-  filter_out(str_length(WORD) <= 2)
+dados_stm <- readRDS(file = "01_dados/dados_prestm.RDS")
 
 # Banco para STM
 dados <- dados_stm |>

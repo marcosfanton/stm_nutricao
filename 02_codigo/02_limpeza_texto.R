@@ -69,32 +69,6 @@ bigrams <- dados |>
 bigrams |>
   readr::write_csv("01_dados/bigrams.csv")
 
-# Análise de expressões acadêmicas por TF-IDF
-tfidf <- dados |>
-  tidytext::unnest_tokens(word, DS_RESUMO) |>
-  dplyr::filter(
-    stringr::str_detect(word, "^[a-záéíóúâêôãõç]{3,}$")
-  ) |>
-  dplyr::count(DOC_ID, word, sort = TRUE) |>
-  tidytext::bind_tf_idf(word, DOC_ID, n) |>
-  dplyr::arrange(desc(tf_idf))
-# Salvar arquivo com análise TF-IDF
-tfidf |>
-  readr::write_csv("01_dados/tfidf.csv")
-
-# Expressões mais características do corpus
-tfidf_corpus <- tfidf |>
-  dplyr::summarise(
-    tf_idf = mean(tf_idf),
-    freq = sum(n),
-    docs = n(),
-    .by = word
-  ) |>
-  dplyr::arrange(desc(freq))
-# Salvar arquivo com análise TF-IDF
-tfidf_corpus |>
-  readr::write_csv("01_dados/tfidf_corpus.csv")
-
 # Dicionário de NGRAMS ####
 ngrams <- read.csv("01_dados/nutrigrams.csv")
 
@@ -120,8 +94,10 @@ dados <- dados |>
 # Remoção de números
 dados <- dados |>
   filter_out(
-    str_detect(WORD, "^\\d+$")
+    str_detect(WORD, "^\\d+$") |
+      str_length(WORD) <= 2
   )
+
 
 # Salvar banco de dados
 saveRDS(dados, file = "01_dados/dados_prestm.RDS")
