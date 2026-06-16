@@ -1,3 +1,49 @@
+# Pacotes ####
+library(tidyverse)
+library(here)
+library(tidytext)
+
+# NGRAMS ####
+# Tetragrams
+tetragrams <- dados |>
+  tidytext::unnest_tokens(tetragram, DS_RESUMO, token = "ngrams", n = 4) |>
+  tidyr::separate(
+    tetragram,
+    into = c("word1", "word2", "word3", "word4"),
+    sep = " "
+  ) |>
+  dplyr::count(word1, word2, word3, word4, sort = TRUE) |>
+  dplyr::filter(n >= 50) |>
+  tidyr::unite(tetragram, word1, word2, word3, word4, sep = " ")
+
+# Salvar arquivo com trigrams
+tetragrams |>
+  readr::write_csv("01_dados/tetragrams.csv")
+
+# Trigrams
+trigrams <- dados |>
+  tidytext::unnest_tokens(trigram, DS_RESUMO, token = "ngrams", n = 3) |>
+  tidyr::separate(trigram, into = c("word1", "word2", "word3"), sep = " ") |>
+  dplyr::count(word1, word2, word3, sort = TRUE) |>
+  dplyr::filter(n >= 50) |>
+  tidyr::unite(trigram, word1, word2, word3, sep = " ")
+# Salvar arquivo com trigrams
+trigrams |>
+  readr::write_csv("01_dados/trigrams.csv")
+
+# Bigrams
+bigrams <- dados |>
+  tidytext::unnest_tokens(bigram, DS_RESUMO, token = "ngrams", n = 2) |>
+  tidyr::separate(bigram, into = c("word1", "word2"), sep = " ") |>
+  dplyr::count(word1, word2, sort = TRUE) |>
+  dplyr::filter(n >= 50) |>
+  tidyr::unite(bigram, word1, word2, sep = " ")
+# Salvar arquivo com bigrams
+bigrams |>
+  readr::write_csv("01_dados/bigrams.csv")
+
+
+# DICIONÁRIO DE NGRAMS ####
 ngrams <- tibble(
   grams = c(
     # TETRAGRAMS ####
