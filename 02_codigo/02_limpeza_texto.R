@@ -55,8 +55,9 @@ dados <- dados |>
 
 # Salvar banco de dados
 saveRDS(dados, file = "01_dados/dados_token-semfiltro.RDS")
+dados <- readRDS("01_dados/dados_token-semfiltro.RDS")
 
-# Remoção de números
+# Remoção de números e palavras maiores que 2 caracteres
 dados <- dados |>
   filter_out(
     str_detect(WORD, "^\\d+$") |
@@ -71,17 +72,12 @@ word_freq <- dados |>
   arrange(FREQ)
 
 # filtrar palavras raras (n =< 2)
-teste <- dados |>
+dados <- dados |>
   inner_join(
     word_freq |>
-      filter(FREQ > 2),
+      filter_out(FREQ <= 2),
     by = "WORD"
   )
-
-word_freq <- teste |>
-  distinct(DOC_ID, WORD) |>
-  count(WORD, name = "FREQ") |>
-  arrange(FREQ)
 
 # Salvar banco de dados
 saveRDS(dados, file = "01_dados/dados_prestm.RDS")
