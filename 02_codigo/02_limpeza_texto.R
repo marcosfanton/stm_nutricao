@@ -83,6 +83,5 @@ word_freq <- teste |>
   count(WORD, name = "FREQ") |>
   arrange(FREQ)
 
-
 # Salvar banco de dados
 saveRDS(dados, file = "01_dados/dados_prestm.RDS")
