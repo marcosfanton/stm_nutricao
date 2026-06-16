@@ -77,7 +77,12 @@ dados <- dados |>
     word_freq |>
       filter_out(FREQ <= 2),
     by = "WORD"
-  )
+  ) |>
+  select(-FREQ)
+
+# filtrar stopwords científicas
+dados <- dados |>
+  anti_join(nutri_lixo, by = c("WORD" = "WORD"))
 
 # Salvar banco de dados
 saveRDS(dados, file = "01_dados/dados_prestm.RDS")
