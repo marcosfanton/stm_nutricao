@@ -80,6 +80,7 @@ dados <- dados |>
   ) |>
   select(-FREQ)
 
+
 # filtrar stopwords científicas
 dados <- dados |>
   anti_join(nutri_lixo, by = c("WORD" = "WORD"))

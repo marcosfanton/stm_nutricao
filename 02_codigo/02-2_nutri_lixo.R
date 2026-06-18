@@ -1,6 +1,10 @@
 lixo <- c(
   "ic95",
   "statistical",
-  "package"
+  "package",
+  "revisao_literatura",
+  "capitulo",
+  "original",
+  "qui"
 )
 nutri_lixo <- tibble(WORD = lixo)
