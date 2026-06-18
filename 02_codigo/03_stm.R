@@ -81,7 +81,7 @@ stm_nutricao <- stm(
 )
 
 # Salvar Análise
-saveRDS(stm_nutricao, file = "01_dados/stm70.RDS")
+saveRDS(stm_nutricao, file = "01_dados/stm65.RDS")
 
 # tbl TÓPICO | FREX | BETA | GAMMA ####
 # BETA
@@ -117,5 +117,5 @@ tabela_topicos <- frex_tb |>
   arrange(desc(GAMMA))
 
 # Salvar Tabela
-write_csv(tabela_topicos, "01_dados/tabela_70stm.csv")
-saveRDS(tabela_topicos, "01_dados/tabela_70stm.rds")
+write_csv(tabela_topicos, "01_dados/tabela_65stm.csv")
+saveRDS(tabela_topicos, "01_dados/tabela_65stm.rds")
