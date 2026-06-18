@@ -40,7 +40,6 @@ muitos_k <- tibble(K = c(60, 65, 70, 75, 80)) |>
     )
   )
 
-
 heldout <- make.heldout(dados)
 
 k_result <- muitos_k |> # Cria banco com resultados de cada tópico
@@ -55,6 +54,7 @@ k_result <- muitos_k |> # Cria banco com resultados de cada tópico
     iterations = map_dbl(topic_model, function(x) length(x$convergence$bound))
   )
 
+# Gráfico de diagnóstico
 k_result |>
   transmute(
     K,
@@ -73,7 +73,7 @@ k_result |>
 # Modelo STM ####
 stm_nutricao <- stm(
   dados,
-  K = 70,
+  K = 65,
   prevalence = ~AN_BASE,
   seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
   data = covars,
@@ -83,8 +83,7 @@ stm_nutricao <- stm(
 # Salvar Análise
 saveRDS(stm_nutricao, file = "01_dados/stm70.RDS")
 
-# Tabela com Tópico, FREX, BETA, GAMMA ####
-
+# tbl TÓPICO | FREX | BETA | GAMMA ####
 # BETA
 beta_tb <- tidy(stm_nutricao, matrix = "beta") |>
   mutate(topic = topic) |>
@@ -93,7 +92,6 @@ beta_tb <- tidy(stm_nutricao, matrix = "beta") |>
     BETA = paste(term, collapse = ", "),
     .by = topic
   )
-
 
 # FREX
 frex_tb <- tidy(stm_nutricao, matrix = "frex") |>

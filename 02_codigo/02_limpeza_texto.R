@@ -46,16 +46,15 @@ dados <- dados |>
   mutate(
     DS_RESUMO = str_replace_all(DS_RESUMO, dicionario_grams)
   )
+saveRDS(dados, file = "01_dados/dados_resumos.RDS")
+write_csv(dados, "01_dados/dados_resumos.csv")
 
 
 # Banco para STM ####
 dados <- dados |>
   tidytext::unnest_tokens(output = WORD, input = DS_RESUMO, drop = TRUE) |>
-  select(DOC_ID, NM_PRODUCAO, WORD, AN_BASE)
+  select(DOC_ID, AN_BASE, NM_PRODUCAO, WORD)
 
-# Salvar banco de dados
-saveRDS(dados, file = "01_dados/dados_token-semfiltro.RDS")
-dados <- readRDS("01_dados/dados_token-semfiltro.RDS")
 
 # Remoção de números e palavras maiores que 2 caracteres
 dados <- dados |>
