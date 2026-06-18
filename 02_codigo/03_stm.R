@@ -9,6 +9,7 @@ library(furrr)
 library(stm)
 library(tidyr)
 library(tidytext)
+library(tidystm)
 
 # Abrir dados
 dados_stm <- readRDS(file = "01_dados/dados_prestm.RDS")
@@ -119,3 +120,48 @@ tabela_topicos <- frex_tb |>
 # Salvar Tabela
 write_csv(tabela_topicos, "01_dados/tabela_65stm.csv")
 saveRDS(tabela_topicos, "01_dados/tabela_65stm.rds")
+
+# TABELA RESUMOS
+dados_resumo <- readRDS(file = "01_dados/dados_resumos.RDS")
+
+tabela_resumos <- tidy(stm_nutricao, matrix = "gamma") |>
+  slice_max(gamma, n = 3, by = topic) |>
+  left_join(dados_resumo, by = c("document" = "DOC_ID")) |>
+  left_join(tabela_topicos, by = "topic") |>
+  arrange(topic, desc(gamma)) |>
+  select(topic, FREX, DS_RESUMO, document)
+
+# Salvar Tabela Resumos
+write_csv(tabela_resumos, "01_dados/tabela_resumos.csv")
+saveRDS(tabela_resumos, "01_dados/tabela_resumos.rds")
+
+
+# Efeito ano ####
+stm_efeitoano <- stm::estimateEffect(
+  1:65 ~ s(AN_BASE, k = 3),
+  stmobj = stm_nutricao,
+  metadata = covars
+)
+
+stm_ano <- tidystm::extract.estimateEffect(
+  x = stm_efeitoano,
+  covariate = "AN_BASE",
+  model = stm_nutricao,
+  method = "continuous",
+  labeltype = "frex",
+  n = 4
+)
+
+# Gráfico
+ggplot(
+  stm_ano,
+  aes(
+    x = covariate.value,
+    y = estimate,
+    ymin = ci.lower,
+    ymax = ci.upper
+  )
+) +
+  facet_wrap(~label, nrow = 5) +
+  geom_ribbon(alpha = .5) +
+  geom_line()
