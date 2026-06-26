@@ -41,11 +41,16 @@ n_grams <- ngrams |>
 
 dicionario_grams <- set_names(n_grams$substituicao, n_grams$padrao)
 
+# Filtragem de resumo em inglês não filtrado por pacote (ID: 987) ####
+dados <- dados |>
+  filter_out(DOC_ID == 987)
+
 # Substituição dos NGRAMS na variável DS_RESUMO
 dados <- dados |>
   mutate(
     DS_RESUMO = str_replace_all(DS_RESUMO, dicionario_grams)
   )
+
 saveRDS(dados, file = "01_dados/dados_resumos.RDS")
 write_csv(dados, "01_dados/dados_resumos.csv")
 dados <- readRDS("01_dados/dados_resumos.RDS")
