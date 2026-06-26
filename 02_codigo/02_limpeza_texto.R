@@ -48,7 +48,7 @@ dados <- dados |>
   )
 saveRDS(dados, file = "01_dados/dados_resumos.RDS")
 write_csv(dados, "01_dados/dados_resumos.csv")
-
+dados <- readRDS("01_dados/dados_resumos.RDS")
 
 # Banco para STM ####
 dados <- dados |>

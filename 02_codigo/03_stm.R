@@ -118,8 +118,9 @@ tabela_topicos <- frex_tb |>
   arrange(desc(GAMMA))
 
 # Salvar Tabela
-write_csv(tabela_topicos, "01_dados/tabela_65stm.csv")
+write_csv(tabela_topicos, "01_dados/tabela_65stm-2406.csv")
 saveRDS(tabela_topicos, "01_dados/tabela_65stm.rds")
+
 
 # TABELA RESUMOS
 dados_resumo <- readRDS(file = "01_dados/dados_resumos.RDS")
@@ -132,7 +133,7 @@ tabela_resumos <- tidy(stm_nutricao, matrix = "gamma") |>
   select(topic, FREX, DS_RESUMO, document)
 
 # Salvar Tabela Resumos
-write_csv(tabela_resumos, "01_dados/tabela_resumos.csv")
+write_csv(tabela_resumos, "01_dados/tabela_resumos-2406.csv")
 saveRDS(tabela_resumos, "01_dados/tabela_resumos.rds")
 
 

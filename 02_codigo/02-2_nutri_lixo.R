@@ -5,6 +5,8 @@ lixo <- c(
   "revisao_literatura",
   "capitulo",
   "original",
-  "qui"
+  "qui",
+  "grupo",
+  "grupos"
 )
 nutri_lixo <- tibble(WORD = lixo)
