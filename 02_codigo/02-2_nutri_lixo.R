@@ -7,10 +7,7 @@ lixo <- c(
   "original",
   "qui",
   "grupo",
-  "grupos",
   "resumo",
-  "introducao",
-  "objetivo",
-  "objetivos"
+  "introducao"
 )
 nutri_lixo <- tibble(WORD = lixo)
