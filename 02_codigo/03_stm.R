@@ -126,7 +126,7 @@ saveRDS(tabela_topicos, "01_dados/tabela_65stm.rds")
 dados_resumo <- readRDS(file = "01_dados/dados_resumos.RDS")
 
 tabela_resumos <- tidy(stm_nutricao, matrix = "gamma") |>
-  slice_max(gamma, n = 3, by = topic) |>
+  slice_max(gamma, n = 5, by = topic) |>
   left_join(dados_resumo, by = c("document" = "DOC_ID")) |>
   left_join(tabela_topicos, by = "topic") |>
   arrange(topic, desc(gamma)) |>
