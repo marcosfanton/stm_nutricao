@@ -1,0 +1,97 @@
+---
+title: "Relatório Tópicos Nutrição"
+format: html
+---
+
+## Metodologia
+### Banco de dados
+Dados importados da Plataforma Dados Abertos da CAPES - Grupo: Catálogo de Teses e Dissertações.
+Período: 2011 a 2024
+N: 976.217 
+Seleção: Código de Área da Nutrição (CD_AREA_CONHECIMENTO (40500004))
+n: 5.738 trabalhos 
+#### Filtragem inicial
+Exclusões:
+MESTRADO PROFISSIONAL
+1. Programa (25001019075P0) (n: 30)
+2. Mestrado Profissional: NM_GRAU_ACADEMICO (n: 325)
+3. RESUMOS INSUFICIENTES (<50 palavras) (n:96)
+4. RESUMOS EM INGLÊS E OUTROS IDIOMAS (n:8)
+TOTAL: n.284
+#### Descrição do Banco
+```{r - Descrição do banco}
+library(tidyverse)
+library(here)
+library(gt)
+dados <- readRDS(file = "01_dados/catalogo_limpo.RDS")
+# GRAU ACADÊMICO
+tb_grau <- dados |> 
+    count(NM_GRAU_ACADEMICO, name = "n") |> 
+    arrange(desc(n)) |> 
+    transmute(
+        grupo = "Grau Acadêmico",
+        categoria = NM_GRAU_ACADEMICO,
+        n
+)
+# REGIÃO
+tb_regiao <- dados |> 
+    count(NM_REGIAO, name = "n") |> 
+    arrange(desc(n)) |> 
+    transmute(
+        grupo = "Região",
+        categoria = NM_REGIAO,
+        n
+)
+# Top 5 ANOS
+tb_ano <- dados |> 
+    count(AN_BASE, name = "n") |> 
+    arrange(desc(n)) |> 
+    slice_head(n = 5) |> 
+    transmute(
+        grupo = "Ano (Top 5)",
+        categoria = as.character(AN_BASE),
+        n
+)
+
+# Top 5 IES
+tb_ies <- dados |> 
+    count(NM_ENTIDADE_ENSINO, name = "n") |> 
+    arrange(desc(n)) |> 
+    slice_head(n = 5) |> 
+    transmute(
+        grupo = "IES (Top 5)",
+        categoria = as.character(NM_ENTIDADE_ENSINO),
+        n
+)
+# Junção
+tabela1 <- bind_rows(
+    tb_grau,
+    tb_regiao,
+    tb_ano,
+    tb_ies
+)
+
+tabela1 |> 
+  gt(groupname_col = "grupo") |> 
+  cols_label(
+    categoria = "Categoria",
+    n = "n"
+  ) |> 
+  tab_header(
+    title = "Tabela 1"
+  )
+```
+#### Limpeza de texto
+Transformações do texto:
+a. caixa baixa
+b. retirada de pontuações e símbolos especiais
+c. retirada de stopwords padrão da língua portugues
+d. substitução de expressões separadas por ngrams (bi-, tri- e tetragrams)
+e. remoção de números e palavras com menos de 2 caracteres
+f. remoção de stopwords cientíticas
+#### Modelo STM
+Rodamos modelos de 60, 65, 70, 75 e 80 tópicos
+De acordo com gráficos de diagnóstico, o melhor modelo é de 65 Tópicos
+
+
+

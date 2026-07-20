@@ -4,7 +4,7 @@ library(here)
 library(tidytext)
 library(stopwords)
 
-# Abrir dados (n: 5.284)
+# Abrir dados (n: 5.282)
 dados <- readRDS(file = "01_dados/catalogo_limpo.RDS")
 
 # Função de limpeza de texto ####
@@ -41,10 +41,6 @@ n_grams <- ngrams |>
 
 dicionario_grams <- set_names(n_grams$substituicao, n_grams$padrao)
 
-# Filtragem de resumo em inglês não filtrado por pacote (ID: 987) ####
-dados <- dados |>
-  filter_out(DOC_ID %in% c(854, 987))
-
 # Substituição dos NGRAMS na variável DS_RESUMO
 dados <- dados |>
   mutate(
@@ -60,8 +56,7 @@ dados <- dados |>
   tidytext::unnest_tokens(output = WORD, input = DS_RESUMO, drop = TRUE) |>
   select(DOC_ID, AN_BASE, NM_PRODUCAO, WORD)
 
-
-# Remoção de números e palavras maiores que 2 caracteres
+# Remoção de números e palavras com menos de 2 caracteres
 dados <- dados |>
   filter_out(
     str_detect(WORD, "^\\d+$") |

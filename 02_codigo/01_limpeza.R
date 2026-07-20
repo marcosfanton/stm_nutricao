@@ -183,9 +183,14 @@ catalogo_limpo <- catalogo_raw |>
   ) |>
   dplyr::mutate(DOC_ID = row_number())
 
-# Salvar banco em .csv -- n: 5284
+# Exclusão de dois resumos em inglês detectados apenas posteriormente
+catalogo_limpo <- catalogo_limpo |>
+  dplyr::filter_out(DOC_ID == c(987, 854))
+
+
+# Salvar banco em .csv -- n: 5282
 catalogo_limpo |>
   readr::write_csv("01_dados/catalogo_limpo.csv")
 
-# Salvar banco em .RDS -- n: 5.284
+# Salvar banco em .RDS -- n: 5.282
 saveRDS(catalogo_limpo, file = "01_dados/catalogo_limpo.RDS")

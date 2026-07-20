@@ -40,6 +40,7 @@ muitos_k <- tibble(K = c(60, 65, 70, 75, 80)) |>
       )
     )
   )
+saveRDS(muitos_k, file = "01_dados/stm65-80.RDS")
 
 heldout <- make.heldout(dados)
 
@@ -82,7 +83,7 @@ stm_nutricao <- stm(
 )
 
 # Salvar Análise
-saveRDS(stm_nutricao, file = "01_dados/stm65.RDS")
+saveRDS(stm_nutricao, file = "01_dados/stm65-2406.RDS")
 
 # tbl TÓPICO | FREX | BETA | GAMMA ####
 # BETA
@@ -135,7 +136,6 @@ tabela_resumos <- tidy(stm_nutricao, matrix = "gamma") |>
 # Salvar Tabela Resumos
 write_csv(tabela_resumos, "01_dados/tabela_resumos-2406.csv")
 saveRDS(tabela_resumos, "01_dados/tabela_resumos.rds")
-
 
 # Efeito ano ####
 stm_efeitoano <- stm::estimateEffect(
