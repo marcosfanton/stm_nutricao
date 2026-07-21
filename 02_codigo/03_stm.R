@@ -13,43 +13,64 @@ library(tidystm)
 
 # Abrir dados
 dados_stm <- readRDS(file = "01_dados/dados_prestm.RDS")
+metadados <- readRDS("01_dados/dados_resumos.RDS")
 
 # Banco para STM
-dados <- dados_stm |>
+dfm <- dados_stm |>
   count(DOC_ID, WORD, name = "N")
 
 # Matriz esparsa
-dados <- dados |> tidytext::cast_sparse(DOC_ID, WORD, N) #matriz para análise
+matriz <- dfm |>
+  tidytext::cast_sparse(DOC_ID, WORD, N) # matriz para análise
 
-# Covariável do modelo
-covars <- dados_stm |>
-  dplyr::distinct(DOC_ID, AN_BASE)
+matriz_id <- as.integer(rownames(matriz))
 
-#
-muitos_k <- tibble(K = c(60, 65, 70, 75, 80)) |>
+# Metadados do modelo
+metadados <- metadados |>
+  dplyr::distinct(DOC_ID, AN_BASE) |>
+  slice(match(matriz_id, DOC_ID))
+
+# Checar bancos
+stopifnot(
+  !anyNA(metadados$DOC_ID),
+  identical(matriz_id, as.integer(metadados$DOC_ID)),
+  nrow(matriz) == nrow(metadados)
+)
+
+# Heldout
+set.seed(4016325) # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
+
+heldout <- make.heldout(
+  documents = matriz
+)
+
+# MODELOS PARA COMPARAÇÃO
+muitos_k <- tibble(K = c(65, 70)) |>
   mutate(
     topic_model = purrr::map(
       K,
-      ~ stm(
-        dados,
-        K = .,
-        prevalence = ~AN_BASE,
-        seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
-        data = covars,
-        init.type = "Spectral"
-      )
+      \(k) {
+        stm(
+          documents = heldout$documents,
+          vocab = heldout$vocab,
+          K = k,
+          prevalence = ~AN_BASE,
+          seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
+          data = metadados,
+          init.type = "Spectral"
+        )
+      }
     )
   )
 saveRDS(muitos_k, file = "01_dados/stm65-80.RDS")
+muitos_k <- readRDS("01_dados/stm65-80.RDS")
 
-heldout <- make.heldout(dados)
-
-k_result <- muitos_k |> # Cria banco com resultados de cada tópico
+resultado_k <- muitos_k |> # Cria banco com resultados de cada tópico
   mutate(
     exclusivity = map(topic_model, exclusivity),
-    semantic_coherence = map(topic_model, semanticCoherence, dados),
+    semantic_coherence = map(topic_model, semanticCoherence, heldout$documents),
     eval_heldout = map(topic_model, eval.heldout, heldout$missing),
-    residual = map(topic_model, checkResiduals, dados),
+    residual = map(topic_model, checkResiduals, heldout$documents),
     bound = map_dbl(topic_model, function(x) max(x$convergence$bound)),
     lfact = map_dbl(topic_model, function(x) lfactorial(x$settings$dim$K)),
     lbound = bound + lfact,
@@ -57,7 +78,7 @@ k_result <- muitos_k |> # Cria banco com resultados de cada tópico
   )
 
 # Gráfico de diagnóstico
-k_result |>
+resultado_k |>
   transmute(
     K,
     `Lower bound` = lbound,
@@ -72,13 +93,35 @@ k_result |>
   theme_classic() +
   facet_wrap(~Metric, scales = "free_y")
 
+# Gráfico de diagnóstico - Coerência Semântica x Exclusividade
+resultado_k %>%
+  select(K, exclusivity, semantic_coherence) %>%
+  filter(K %in% c(65, 70)) %>%
+  unnest() %>%
+  mutate(K = as.factor(K)) %>%
+  ggplot(aes(semantic_coherence, exclusivity, color = K)) +
+  geom_point(size = 2, alpha = 0.7) +
+  labs(
+    x = "Semantic coherence",
+    y = "Exclusivity",
+    title = "Comparing exclusivity and semantic coherence",
+    subtitle = "Models with fewer topics have higher semantic coherence for more topics, but lower exclusivity"
+  )
+
+# Escolha do Modelo
+stm_nutricao <- resultado_k |>
+  filter(K == 65) |>
+  pull(topic_model)
+
+stm_nutricao <- stm_nutricao[[1]]
+
 # Modelo STM ####
 stm_nutricao <- stm(
-  dados,
+  documents = matriz,
   K = 65,
-  prevalence = ~AN_BASE,
+  prevalence = ~ s(AN_BASE),
   seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
-  data = covars,
+  data = metadados,
   init.type = "Spectral"
 )
 
@@ -88,28 +131,28 @@ saveRDS(stm_nutricao, file = "01_dados/stm65-2406.RDS")
 # tbl TÓPICO | FREX | BETA | GAMMA ####
 # BETA
 beta_tb <- tidy(stm_nutricao, matrix = "beta") |>
-  mutate(topic = topic) |>
-  slice_max(beta, n = 10, by = topic) |>
+  group_by(topic) |>
+  slice_max(beta, n = 10) |>
   summarise(
     BETA = paste(term, collapse = ", "),
-    .by = topic
+    .groups = "drop"
   )
 
 # FREX
 frex_tb <- tidy(stm_nutricao, matrix = "frex") |>
-  mutate(topic = topic) |>
-  slice_head(n = 10, by = topic) |>
+  group_by(topic) |>
+  slice_head(n = 10) |>
   summarise(
     FREX = paste(term, collapse = ", "),
-    .by = topic
+    .groups = "drop"
   )
 
 # GAMMA
 gamma_tb <- tidy(stm_nutricao, matrix = "gamma") |>
-  mutate(topic = topic) |>
+  group_by(topic) |>
   summarise(
     GAMMA = mean(gamma),
-    .by = topic
+    .groups = "drop"
   )
 
 # TABELA TÓPICOS
@@ -119,22 +162,31 @@ tabela_topicos <- frex_tb |>
   arrange(desc(GAMMA))
 
 # Salvar Tabela
-write_csv(tabela_topicos, "01_dados/tabela_65stm-2406.csv")
-saveRDS(tabela_topicos, "01_dados/tabela_65stm.rds")
+write_csv(tabela_topicos, "01_dados/tabela_65stm-2107.csv")
+saveRDS(tabela_topicos, "01_dados/tabela_65stm-2107.rds")
 
 
 # TABELA RESUMOS
 dados_resumo <- readRDS(file = "01_dados/dados_resumos.RDS")
 
-tabela_resumos <- tidy(stm_nutricao, matrix = "gamma") |>
-  slice_max(gamma, n = 5, by = topic) |>
+# 1. Gamma por documento
+gamma_docs <- tidy(stm_nutricao, matrix = "gamma") |>
+  group_by(document) |>
+  slice_max(gamma, n = 1, with_ties = FALSE) |>
+  ungroup()
+
+# 3. Selecionar documentos mais representativos por tópico
+tabela_resumos <- gamma_docs |>
+  group_by(topic) |>
+  slice_max(gamma, n = 5, with_ties = FALSE) |>
+  ungroup() |>
   left_join(dados_resumo, by = c("document" = "DOC_ID")) |>
   left_join(tabela_topicos, by = "topic") |>
   arrange(topic, desc(gamma)) |>
-  select(topic, FREX, DS_RESUMO, document)
+  select(topic, FREX, DS_RESUMO, document, gamma)
 
 # Salvar Tabela Resumos
-write_csv(tabela_resumos, "01_dados/tabela_resumos-2406.csv")
+write_csv(tabela_resumos, "01_dados/tabela_65-2107.csv")
 saveRDS(tabela_resumos, "01_dados/tabela_resumos.rds")
 
 # Efeito ano ####

@@ -161,32 +161,19 @@ catalogo_raw <- catalogo_raw |>
   mutate(
     IDIOMA = textcat::textcat(DS_RESUMO)
   ) |>
-  dplyr::filter_out(IDIOMA == "english") |> # 6
-  dplyr::filter_out(
-    # 2 resumos erroneamente rotulados com idioma alemão ('german')
-    AN_BASE == 2017 &
-      NM_ENTIDADE_ENSINO == "UNIVERSIDADE FEDERAL DA BAHIA" &
-      NM_PRODUCAO ==
-        "OBESIDADE SARCOPÊNICA EM IDOSAS DE UMA UNIVERSIDADE ABERTA À TERCEIRA IDADE"
-  ) |>
-  dplyr::filter_out(
-    AN_BASE == 2024 &
-      NM_ENTIDADE_ENSINO == "UNIVERSIDADE FEDERAL DO RIO DE JANEIRO" &
-      NM_PRODUCAO ==
-        "METABOLÔMICA COMO FERRAMENTA PARA CARACTERIZAÇÃO DAS ALTERAÇÕES METABÓLICAS CAUSADAS PELA COVID-19 SEVERA EM COORTES PROSPECTIVAS DE INDIVÍDUOS ADULTOS E GESTANTES"
-  )
+  dplyr::filter_out(IDIOMA == "english")
 
-# Catálogo Limpo
+# Identificação inicial dos Resumos com DOC_ID00
 catalogo_limpo <- catalogo_raw |>
   dplyr::select(
     -c(NM_SUBTIPO_PRODUCAO, CD_AREA_CONHECIMENTO, CD_PROGRAMA, IDIOMA)
   ) |>
-  dplyr::mutate(DOC_ID = row_number())
+  dplyr::mutate(DOC_ID00 = row_number())
 
-# Exclusão de dois resumos em inglês detectados apenas posteriormente
+# Exclusão de 5 resumos em inglês detectados apenas posteriormente
 catalogo_limpo <- catalogo_limpo |>
-  dplyr::filter_out(DOC_ID == c(987, 854))
-
+  dplyr::filter_out(DOC_ID00 %in% c(854, 987, 992, 2038, 5018)) |>
+  dplyr::mutate(DOC_ID = row_number())
 
 # Salvar banco em .csv -- n: 5282
 catalogo_limpo |>
