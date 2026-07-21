@@ -45,7 +45,7 @@ heldout <- make.heldout(
 )
 
 # MODELOS PARA COMPARAÇÃO
-muitos_k <- tibble(K = c(65, 70)) |>
+muitos_k <- tibble(K = c(60, 65, 70, 75, 80)) |>
   mutate(
     topic_model = purrr::map(
       K,
@@ -62,6 +62,7 @@ muitos_k <- tibble(K = c(65, 70)) |>
       }
     )
   )
+
 saveRDS(muitos_k, file = "01_dados/stm65-80.RDS")
 muitos_k <- readRDS("01_dados/stm65-80.RDS")
 
@@ -91,31 +92,30 @@ resultado_k |>
   geom_point(size = 2) +
   geom_line(linewidth = 1.5, alpha = 0.9, show.legend = FALSE) +
   theme_classic() +
-  facet_wrap(~Metric, scales = "free_y")
+  facet_wrap(~Metric, scales = "free_y") +
+  labs(
+    x = "K (Número de Tópicos)",
+    y = "Valores",
+    colour = "Métricas",
+    title = "Comparação entre modelos",
+    subtitle = "Modelo de 65 Tópicos é o mais apropriado"
+  )
 
 # Gráfico de diagnóstico - Coerência Semântica x Exclusividade
-resultado_k %>%
-  select(K, exclusivity, semantic_coherence) %>%
-  filter(K %in% c(65, 70)) %>%
-  unnest() %>%
-  mutate(K = as.factor(K)) %>%
+resultado_k |>
+  select(K, exclusivity, semantic_coherence) |>
+  filter(K %in% c(60, 65, 70, 75, 80)) |>
+  unnest() |>
+  mutate(K = as.factor(K)) |>
   ggplot(aes(semantic_coherence, exclusivity, color = K)) +
   geom_point(size = 2, alpha = 0.7) +
   labs(
-    x = "Semantic coherence",
-    y = "Exclusivity",
-    title = "Comparing exclusivity and semantic coherence",
-    subtitle = "Models with fewer topics have higher semantic coherence for more topics, but lower exclusivity"
+    x = "Coerência Semântica",
+    y = "Exclusividade",
+    title = "Comparação entre exclusividade e coerência semântica"
   )
 
-# Escolha do Modelo
-stm_nutricao <- resultado_k |>
-  filter(K == 65) |>
-  pull(topic_model)
-
-stm_nutricao <- stm_nutricao[[1]]
-
-# Modelo STM ####
+# Modelo STM: 65 Tópicos ####
 stm_nutricao <- stm(
   documents = matriz,
   K = 65,
@@ -126,7 +126,7 @@ stm_nutricao <- stm(
 )
 
 # Salvar Análise
-saveRDS(stm_nutricao, file = "01_dados/stm65-2406.RDS")
+saveRDS(stm_nutricao, file = "01_dados/stm65.RDS")
 
 # tbl TÓPICO | FREX | BETA | GAMMA ####
 # BETA
@@ -162,9 +162,8 @@ tabela_topicos <- frex_tb |>
   arrange(desc(GAMMA))
 
 # Salvar Tabela
-write_csv(tabela_topicos, "01_dados/tabela_65stm-2107.csv")
-saveRDS(tabela_topicos, "01_dados/tabela_65stm-2107.rds")
-
+write_csv(tabela_topicos, "01_dados/tabela_65stm.csv")
+saveRDS(tabela_topicos, "01_dados/tabela_65stm.rds")
 
 # TABELA RESUMOS
 dados_resumo <- readRDS(file = "01_dados/dados_resumos.RDS")
@@ -183,11 +182,11 @@ tabela_resumos <- gamma_docs |>
   left_join(dados_resumo, by = c("document" = "DOC_ID")) |>
   left_join(tabela_topicos, by = "topic") |>
   arrange(topic, desc(gamma)) |>
-  select(topic, FREX, DS_RESUMO, document, gamma)
+  select(topic, FREX, DS_RESUMO, document)
 
 # Salvar Tabela Resumos
-write_csv(tabela_resumos, "01_dados/tabela_65-2107.csv")
-saveRDS(tabela_resumos, "01_dados/tabela_resumos.rds")
+write_csv(tabela_resumos, "01_dados/tabela_resumos-65stm.csv")
+saveRDS(tabela_resumos, "01_dados/tabela_resumos-65stm.rds")
 
 # Efeito ano ####
 stm_efeitoano <- stm::estimateEffect(
