@@ -4,6 +4,7 @@ format:
     html:
         toc: true
         number-sections: true
+        embed-resources: true
 execute: 
     echo: false
     warning: false
@@ -39,6 +40,8 @@ library(tidyverse)
 library(here)
 library(gt)
 library(scales)
+library(tidystm)
+
 dados <- readRDS(here("01_dados", "catalogo_limpo.rds"))
 # GRAU ACADÊMICO
 tb_grau <- dados |>
@@ -264,4 +267,26 @@ tabela_topicos |>
   )
 ```
 
+### Efeito ano
 
+Para estimar a prevalência dos tópicos ao longo do tempo, a covariável ano foi incorporada ao componente de prevalência do modelo. Isso permite estimar como a prevalência esperada de cada tópico varia em função do ano.
+
+```{r - Gráfico 2 - Tópicos x Ano}
+#| fig-width: 12
+#| fig-height: 28
+stm_ano <- readRDS(here("01_dados", "efeitoano-tidy_65stm.rds"))
+
+# Gráfico
+ggplot(
+  stm_ano,
+  aes(
+    x = covariate.value,
+    y = estimate,
+    ymin = ci.lower,
+    ymax = ci.upper
+  )
+) +
+  facet_wrap(~label, ncol = 4) +
+  geom_ribbon(alpha = .5) +
+  geom_line()
+```

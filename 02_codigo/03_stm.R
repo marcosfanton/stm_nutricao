@@ -207,6 +207,9 @@ stm_ano <- tidystm::extract.estimateEffect(
   n = 2
 )
 
+saveRDS(stm_ano, "01_dados/efeitoano-tidy_65stm.rds")
+
+
 # Gráfico
 ggplot(
   stm_ano,
