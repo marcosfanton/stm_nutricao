@@ -129,10 +129,12 @@ stm_nutricao <- stm(
 saveRDS(stm_nutricao, file = "01_dados/stm65.RDS")
 
 # tbl TÓPICO | FREX | BETA | GAMMA ####
+stm_nutricao <- readRDS(file = "01_dados/stm65.RDS")
+
 # BETA
 beta_tb <- tidy(stm_nutricao, matrix = "beta") |>
   group_by(topic) |>
-  slice_max(beta, n = 10) |>
+  slice_max(beta, n = 5) |>
   summarise(
     BETA = paste(term, collapse = ", "),
     .groups = "drop"
@@ -141,7 +143,7 @@ beta_tb <- tidy(stm_nutricao, matrix = "beta") |>
 # FREX
 frex_tb <- tidy(stm_nutricao, matrix = "frex") |>
   group_by(topic) |>
-  slice_head(n = 10) |>
+  slice_head(n = 5) |>
   summarise(
     FREX = paste(term, collapse = ", "),
     .groups = "drop"
@@ -177,7 +179,7 @@ gamma_docs <- tidy(stm_nutricao, matrix = "gamma") |>
 # 3. Selecionar documentos mais representativos por tópico
 tabela_resumos <- gamma_docs |>
   group_by(topic) |>
-  slice_max(gamma, n = 5, with_ties = FALSE) |>
+  slice_max(gamma, n = 3, with_ties = FALSE) |>
   ungroup() |>
   left_join(dados_resumo, by = c("document" = "DOC_ID")) |>
   left_join(tabela_topicos, by = "topic") |>
@@ -190,10 +192,11 @@ saveRDS(tabela_resumos, "01_dados/tabela_resumos-65stm.rds")
 
 # Efeito ano ####
 stm_efeitoano <- stm::estimateEffect(
-  1:65 ~ s(AN_BASE, k = 3),
+  1:65 ~ s(AN_BASE),
   stmobj = stm_nutricao,
-  metadata = covars
+  metadata = metadados
 )
+saveRDS(stm_efeitoano, "01_dados/efeitoano_65stm.rds")
 
 stm_ano <- tidystm::extract.estimateEffect(
   x = stm_efeitoano,
@@ -201,7 +204,7 @@ stm_ano <- tidystm::extract.estimateEffect(
   model = stm_nutricao,
   method = "continuous",
   labeltype = "frex",
-  n = 4
+  n = 2
 )
 
 # Gráfico

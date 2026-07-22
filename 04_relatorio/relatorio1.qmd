@@ -1,97 +1,267 @@
 ---
-title: "Relatório Tópicos Nutrição"
-format: html
+title: "Artigo -- Tópicos de Teses e Dissertações em Nutrição (27/07/2026)"
+format: 
+    html:
+        toc: true
+        number-sections: true
+execute: 
+    echo: false
+    warning: false
+    message: false
 ---
 
 ## Metodologia
-### Banco de dados
 Dados importados da Plataforma Dados Abertos da CAPES - Grupo: Catálogo de Teses e Dissertações.
+
 Período: 2011 a 2024
+
 N: 976.217 
+
 Seleção: Código de Área da Nutrição (CD_AREA_CONHECIMENTO (40500004))
 n: 5.738 trabalhos 
-#### Filtragem inicial
-Exclusões:
-MESTRADO PROFISSIONAL
+
+### Filtros
+
 1. Programa (25001019075P0) (n: 30)
+
 2. Mestrado Profissional: NM_GRAU_ACADEMICO (n: 325)
+
 3. RESUMOS INSUFICIENTES (<50 palavras) (n:96)
-4. RESUMOS EM INGLÊS E OUTROS IDIOMAS (n:8)
-TOTAL: n.284
-#### Descrição do Banco
+
+4. RESUMOS EM INGLÊS E OUTROS IDIOMAS (n:10)
+
+TOTAL: n:5.281
+
+### Descrição do Banco
+
 ```{r - Descrição do banco}
 library(tidyverse)
 library(here)
 library(gt)
-dados <- readRDS(file = "01_dados/catalogo_limpo.RDS")
+library(scales)
+dados <- readRDS(here("01_dados", "catalogo_limpo.rds"))
 # GRAU ACADÊMICO
-tb_grau <- dados |> 
-    count(NM_GRAU_ACADEMICO, name = "n") |> 
-    arrange(desc(n)) |> 
-    transmute(
-        grupo = "Grau Acadêmico",
-        categoria = NM_GRAU_ACADEMICO,
-        n
-)
+tb_grau <- dados |>
+  count(NM_GRAU_ACADEMICO, name = "n") |>
+  arrange(desc(n)) |>
+  transmute(
+    grupo = "Grau Acadêmico",
+    categoria = NM_GRAU_ACADEMICO,
+    n
+  )
 # REGIÃO
-tb_regiao <- dados |> 
-    count(NM_REGIAO, name = "n") |> 
-    arrange(desc(n)) |> 
-    transmute(
-        grupo = "Região",
-        categoria = NM_REGIAO,
-        n
-)
+tb_regiao <- dados |>
+  count(NM_REGIAO, name = "n") |>
+  arrange(desc(n)) |>
+  transmute(
+    grupo = "Região",
+    categoria = NM_REGIAO,
+    n
+  )
 # Top 5 ANOS
-tb_ano <- dados |> 
-    count(AN_BASE, name = "n") |> 
-    arrange(desc(n)) |> 
-    slice_head(n = 5) |> 
-    transmute(
-        grupo = "Ano (Top 5)",
-        categoria = as.character(AN_BASE),
-        n
-)
-
+tb_ano <- dados |>
+  count(AN_BASE, name = "n") |>
+  arrange(desc(n)) |>
+  slice_head(n = 5) |>
+  transmute(
+    grupo = "Ano (Top 5)",
+    categoria = as.character(AN_BASE),
+    n
+  )
 # Top 5 IES
-tb_ies <- dados |> 
-    count(NM_ENTIDADE_ENSINO, name = "n") |> 
-    arrange(desc(n)) |> 
-    slice_head(n = 5) |> 
-    transmute(
-        grupo = "IES (Top 5)",
-        categoria = as.character(NM_ENTIDADE_ENSINO),
-        n
-)
+tb_ies <- dados |>
+  count(NM_ENTIDADE_ENSINO, name = "n") |>
+  arrange(desc(n)) |>
+  slice_head(n = 5) |>
+  transmute(
+    grupo = "IES (Top 5)",
+    categoria = as.character(NM_ENTIDADE_ENSINO),
+    n
+  )
 # Junção
 tabela1 <- bind_rows(
-    tb_grau,
-    tb_regiao,
-    tb_ano,
-    tb_ies
+  tb_grau,
+  tb_regiao,
+  tb_ano,
+  tb_ies
 )
-
-tabela1 |> 
-  gt(groupname_col = "grupo") |> 
+tabela1 |>
+  gt(groupname_col = "grupo") |>
   cols_label(
     categoria = "Categoria",
     n = "n"
-  ) |> 
+  ) |>
   tab_header(
     title = "Tabela 1"
   )
 ```
-#### Limpeza de texto
+### Limpeza de texto
 Transformações do texto:
-a. caixa baixa
-b. retirada de pontuações e símbolos especiais
-c. retirada de stopwords padrão da língua portugues
-d. substitução de expressões separadas por ngrams (bi-, tri- e tetragrams)
-e. remoção de números e palavras com menos de 2 caracteres
-f. remoção de stopwords cientíticas
-#### Modelo STM
-Rodamos modelos de 60, 65, 70, 75 e 80 tópicos
-De acordo com gráficos de diagnóstico, o melhor modelo é de 65 Tópicos
 
+a. caixa baixa
+
+b. retirada de pontuações e símbolos especiais
+
+c. retirada de stopwords padrão da língua portugues
+
+d. substitução de expressões separadas por ngrams (bi-, tri- e tetragrams)
+
+e. remoção de números e palavras com menos de 2 caracteres
+
+f. remoção de stopwords cientíticas
+
+### Modelo STM
+Rodamos modelos de 60, 65, 70, 75 e 80 tópicos
+De acordo com gráficos de diagnóstico, o melhor modelo é o de 65 Tópicos.
+
+**Breves definições:**
+
+Documento: unidade de análise (resumo de tese ou dissertação).
+
+Tópico: Distribuição probabilística de palavras que representa um tema latente no *corpus*. Cada documento possui uma combinação de múltiplos tópicos em diferentes proporções.
+
+Medida Beta (β): Probabilidade de uma palavra ocorrer em determinado tópico.  
+
+FREX (Frequent and Exclusive): Métrica que combina frequência de uma palavra com sua exclusividade com relação aos demais tópicos. 
+
+Medida Gamma (γ): Proporção estimada de cada tópico em um documento. 
+
+Abaixo, segue gráfico com os 30 tópicos mais pesquisados. A medida gamma indica a prevalência média do tópico no *corpus* inteiro. Por exemplo, 3.3% do Tópico 52 não deve ser interpretado como 3.3% dos trabalhos (teses e dissertações), mas 3.3% de todo o texto do *corpus*.  
+
+```{r - Gráfico1 -- 30 Tópicos}
+tabela_topicos <- readRDS(here("01_dados", "tabela_65stm.rds"))
+tabela_topicos |>
+  slice_max(
+    order_by = GAMMA,
+    n = 30,
+    with_ties = FALSE
+  ) |>
+
+  # Cria rótulos com as três primeiras palavras FREX
+  mutate(
+    frex_curto = str_split(FREX, ", ") |>
+      map_chr(\(x) paste(head(x, 3), collapse = ", ")),
+
+    rotulo = paste0(
+      "(",
+      sprintf("%02d", topic),
+      ") ",
+      str_replace_all(frex_curto, "_", " ")
+    ),
+
+    rotulo = fct_reorder(rotulo, GAMMA)
+  ) |>
+  ggplot(
+    aes(
+      x = GAMMA,
+      y = rotulo
+    )
+  ) +
+
+  # Hastes do lollipop
+  geom_segment(
+    aes(
+      x = 0,
+      xend = GAMMA,
+      yend = rotulo
+    ),
+    linewidth = 0.7,
+    color = "grey70"
+  ) +
+
+  # Pontos
+  geom_point(
+    size = 3.2,
+    color = "#6A3D9A"
+  ) +
+
+  # Valores de GAMMA ao lado dos pontos
+  geom_text(
+    aes(
+      label = percent(GAMMA, accuracy = 0.1)
+    ),
+    hjust = -0.25,
+    size = 3.2
+  ) +
+
+  # Formatação do eixo x
+  scale_x_continuous(
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.14))
+  ) +
+  # Títulos e rótulos
+  labs(
+    title = "Tópicos com maior prevalência",
+    subtitle = "Trinta tópicos com os maiores valores médios de γ",
+    x = "Prevalência média do tópico",
+    y = NULL,
+  ) +
+
+  # Tema
+  theme_minimal(base_size = 10) +
+
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "grey35"),
+    axis.text.y = element_text(size = 9),
+    plot.margin = margin(
+      t = 10,
+      r = 25,
+      b = 10,
+      l = 10
+    )
+  )
+```
+
+Abaixo, segue a tabela integral com todos os tópicos. 
+```{r - Tabela2 - 65 Tópicos}
+tabela_topicos |>
+
+  arrange(desc(GAMMA)) |>
+
+  mutate(
+    FREX = str_split(FREX, ", ") |>
+      map_chr(\(x) paste(head(x, 3), collapse = ", ")) |>
+      str_replace_all("_", " ")
+  ) |>
+
+  transmute(
+    Tópico = topic,
+    `Palavras FREX` = FREX,
+    `γ médio` = GAMMA
+  ) |>
+
+  gt() |>
+
+  fmt_number(
+    columns = `γ médio`,
+    decimals = 3
+  ) |>
+
+  cols_align(
+    align = "center",
+    columns = c(Tópico, `γ médio`)
+  ) |>
+
+  cols_width(
+    Tópico ~ px(70),
+    `γ médio` ~ px(90),
+    `Palavras FREX` ~ px(450)
+  ) |>
+
+  tab_header(
+    title = md("**Modelo de 65 Tópicos**"),
+    subtitle = "Ordenados pela prevalência média (γ)"
+  ) |>
+
+  opt_row_striping() |>
+
+  tab_options(
+    table.font.size = 11,
+    data_row.padding = px(4)
+  )
+```
 
 

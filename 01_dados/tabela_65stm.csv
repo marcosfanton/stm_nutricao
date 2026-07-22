@@ -1,66 +1,66 @@
 topic,FREX,BETA,GAMMA
-52,"ean, profissionais, gestores, educacao_alimentar_nutricional, aprendizagem, nutricionista, nutricionistas, aps, atencao_primaria_saude, cuidado","acoes, saude, profissionais, nutricao, sobre, estudo, formacao, nutricionistas, alimentacao, analise",0.033418571737676005
-56,"sintomas_depressivos, has, depressao, alcool, sintomas_ansiedade, tmc, escolaridade, obesidade_abdominal, fatores_associados, tabagismo","prevalencia, associacao, mulheres, anos, maior, variaveis, individuos, depressao, idade, saude",0.030582429888136253
-2,"adolescentes, meninas, excesso_peso, meninos, escolares, adolescencia, escolas_publicas, escola, adolescente, criancas_adolescentes","adolescentes, excesso_peso, anos, escolares, idade, obesidade, prevalencia, estado_nutricional, imc, sobrepeso",0.03020571221777989
-12,"padroes_alimentares, aup, ultraprocessados, padrao_alimentar, consumo_alimentos, processados, doces, refrigerantes, alimentos_ultraprocessados, alimentos_in_natura","consumo, alimentos, consumo_alimentar, consumo_alimentos, ultraprocessados, padrao, maior, padroes_alimentares, processados, associacao",0.030066280685425644
-31,"risco_cardiovascular, sindrome_metabolica, hdl_c, ldl_c, pressao_arterial, colesterol_total, dcv, triglicerideos, homa_ir, hdl","pressao_arterial, colesterol_total, triglicerideos, risco, perfil_lipidico, sindrome_metabolica, associacao, hdl_c, relacao, variaveis",0.027692864679647503
-63,"criancas, crianca, alimentacao_complementar, aleitamento_materno, infantil, ame, aleitamento_materno_exclusivo, amamentacao, maes, filhos","criancas, meses, idade, crianca, maes, vida, anos, infantil, aleitamento_materno, estado_nutricional",0.026959903893459255
-22,"comensalidade, sentidos, sisan, significados, saberes, discursos, discurso, narrativas, concepcoes, bourdieu","alimentacao, campo, sobre, pesquisa, estudo, partir, processo, sociais, analise, social",0.02549726579014902
-36,"pnae, alimentacao_escolar, programa_nacional_alimentacao_escolar, agricultura_familiar, cardapios, sustentabilidade, cardapio, agricultores, sustentaveis, municipios","alimentos, alimentacao_escolar, pnae, cardapios, programa, refeicoes, dados, municipios, escolares, analise",0.023816945157172576
-17,"inseguranca_alimentar, familias, pbf, domicilios, capita, escala_brasileira_inseguranca_alimentar, programa_bolsa_familia, beneficiarias, domicilio, situacao","inseguranca_alimentar, familias, situacao, renda, domicilios, per, capita, domicilio, populacao, maior",0.023043469644245668
-61,"cirurgia_bariatrica, intervencao, cirurgia, operatorio, grupo_intervencao, bgyr, pre_operatorio, roux, reganho, perda_peso","intervencao, apos, reducao, meses, grupos, grupo, pos, peso, pacientes, aumento",0.022577608104814725
-9,"glim, asg, uti, admissao, internacao, desfechos_clinicos, risco_nutricional, utip, obito, criterios_glim","pacientes, desnutricao, mortalidade, tempo, internacao, risco_nutricional, asg, maior, risco, hospitalar",0.02203573935736042
-51,"micronutrientes, macronutrientes, energia, nutrientes, carboidratos, inadequacao, ingestao, recomendacao, habitual, gorduras","consumo, ingestao, dieta, consumo_alimentar, energia, nutrientes, carboidratos, micronutrientes, sodio, calcio",0.021526885399169516
-30,"dcnt, paises, custos, temporal, doencas_cronicas_transmissiveis, tendencia, taxas, saude_publica, populacional, vigilancia","saude, brasil, populacao, paises, dcnt, prevalencia, tendencia, mundo, doencas, doencas_cronicas_transmissiveis",0.021512847737908597
-27,"iid, angulo_fase, roc, tav, rce, braco, corte, indicadores_antropometricos, especificidade, cintura","imc, indice, composicao_corporal, correlacao, valores, idade, mulheres, corte, iid, homens",0.02130576308598016
-3,"pubmed, scopus, lilacs, medline, revisao_sistematica, bases, science, embase, systematic_reviews, artigos","estudos, artigos, revisao_sistematica, dados, revisao, incluidos, bases, resultados, sobre, risco",0.02119437925000231
-43,"polpa, cerrado, tucum, extratos, xique, fruto, frutos, dpph, abts, casca","polpa, atividade_antioxidante, totais, compostos_fenolicos, frutos, extrato, teor, extratos, apresentou, casca",0.020590501283200266
-24,"idade_gestacional, gpg, trimestre, gestantes, pre_natal, pos_parto, iodo, parto, gestacional, gestante","gestantes, gestacao, mulheres, gestacional, pre_natal, durante, pos_parto, pre, peso, parto",0.020463139677313377
-64,"paes, textura, aceitabilidade, tecnologicas, aceitacao, biscoitos, farinhas, sabor, analise_sensorial, formulacoes","farinha, formulacoes, aceitacao, produtos, adicao, sabor, paes, produto, sensorial, sensoriais",0.019894129308629677
-54,"prole, filhotes, perinatal, lactacao, desmame, ocidentalizada, dpn, dieta_materna, descendentes, dhh","dieta, dias, prole, lactacao, durante, grupo, vida, filhotes, gestacao, grupos",0.019721665380452346
-49,"imagem_corporal, transtornos_alimentares, insatisfacao_corporal, comportamentos_alimentares, comer, silhuetas, insatisfacao_imagem_corporal, satisfacao, insatisfacao, cozinhar","percepcao, sobre, imagem_corporal, comer, relacao, saude, aspectos, alimentacao, analise, alimentar",0.0192921744157406
-26,"sarcopenia, idosos, dinapenia, fpm, idosas, fragilidade, massa_muscular, idoso, sarc, forca_muscular","idosos, sarcopenia, massa_muscular, anos, idade, envelhecimento, associacao, idosas, forca_muscular, fragilidade",0.019222298642548232
-18,"leptina, adiponectina, obesidade, sobrepeso, adipocinas, obesos, hormonios, terapia_interdisciplinar, sop, obesas","obesidade, mulheres, leptina, sobrepeso, grupo, imc, adiponectina, concentracoes, grupos, obesos",0.018712258698513125
-10,"anemia, vitamina_d, deficiencia, hipovitaminose_d, hepcidina, ferro, hemoglobina, insuficiencia, ferritina, status","vitamina_d, ferro, deficiencia, anemia, niveis, concentracoes, zinco, vitamina, hemoglobina, concentracao",0.017635790595064763
-47,"especialistas, instrumento, ivc, confiabilidade, validacao_conteudo, itens, cronbach, reprodutibilidade, validade, validacao","instrumento, itens, avaliacao, validacao, validade, questionario, especialistas, concordancia, versao, estudo",0.01750475837551938
-20,"dialise, hemodialise, doenca_renal_cronica, transplante, drc, dhgna, hiv, fibrose, creatinina, dialitica","pacientes, drc, doenca, individuos, grupo, hemodialise, estudo, doenca_renal_cronica, anos, dialise",0.017336545348460904
-45,"seguranca_alimentos, manipuladores, manipuladores_alimentos, boas, contaminacao, enterais, sanitaria, dta, higiene, higienico","amostras, alimentos, praticas, risco, contaminacao, boas, condicoes, qualidade, estudo, seguranca_alimentos",0.017076196093796892
-15,"rotulos, rotulagem, alimentos_industrializados, ingredientes, receitas, aditivos, informacao_nutricional, aditivos_alimentares, rotulo, marketing","alimentos, produtos, consumidores, sodio, sobre, ingredientes, rotulos, rotulagem, informacoes, nutricional",0.01621263596280759
-62,"sono, trabalhadores, turno, estudantes_universitarios, omissao, universitarios, cafe_manha, jantar, estudantes, turnos","sono, trabalho, refeicoes, estudantes, trabalhadores, qualidade, tempo, saude, estudo, estresse",0.015744131018816925
-38,"oeov, cim, biofilme, oero, aureus, antracnose, inibitoria, oecc, pos_colheita, typhimurium","isolados, cepas, cim, bacterias, crescimento, quitosana, concentracoes, armazenamento, oeov, frente",0.015639118154800846
-35,"7nachr, sinalizacao, gpr120, hipotalamo, lps, akt, rock, hipotalamica, homeostase, uprmt","aumento, insulina, animais, camundongos, via, sinalizacao, hipotalamo, obesidade, exercicio_fisico, proteinas",0.015614344237656199
-39,"qualidade_vida, qvrs, disfagia, whoqol, sintomas, dominios, cuidados, bref, tned, caquexia","qualidade_vida, pacientes, tratamento, estado_nutricional, sintomas, doenca, cancer, dados, individuos, nutricional",0.015586638780444391
-58,"ultrassom, secagem, extracao, termossonicacao, temperatura, vacuo, fritura, dende, temperaturas, refrigeracao","extracao, tempo, temperatura, ultrassom, amostras, secagem, agua, tratamento, apos, cor",0.015501213724314384
-34,"qualidade_dieta, pontuacao, iqd, pontuacoes, ias, indice_qualidade_dieta, integrais, escores, adesao, leguminosas","dieta, pontuacao, qualidade_dieta, alimentacao, qualidade, individuos, alimentar, saude, escore, maior",0.015382936083051968
-53,"dmo, tmb, equacoes, dxa, ger, densidade_mineral_ossea, massa_ossea, absorciometria, equacao, mlg","composicao_corporal, equacoes, dmo, dxa, estudo, total, mulheres, apresentaram, anos, equacao",0.015021459872103427
-33,"exaustao, cafeina, pla, atletas, corredores, placebo, corrida, beterraba, salto, cyp1a2","atletas, teste, cafeina, placebo, apos, desempenho, suplementacao, estudo, pos, pre",0.01416938211788645
-37,"cha_verde, diabeticos, stz, diabetico, dieta_hiperlipidica, hls, induzidos, jucara, metformina, hiperlipidico","grupo, grupos, animais, dieta_hiperlipidica, dieta, extrato, tratamento, diabetes, dias, diabeticos",0.01353548302275488
-11,"ambiente_alimentar, entorno, estabelecimentos, desertos, cantinas, pantanos, venda_alimentos, epsan, disponibilidade, comercios","estabelecimentos, ambiente_alimentar, alimentos, ambiente, maior, escolas, disponibilidade, alimentares, renda, saudaveis",0.01318809132484159
-29,"linhaca, oleo_coco, virgem, oleo, ain, frutose, oleo_chia, dieta_cetogenica, 93g, hfhf","dieta, oleo, grupo, grupos, animais, consumo, gordura, acidos_graxos, oleo_coco, figado",0.013094910381581976
-8,"fermentacao, probioticas, casei, colonica, fermentado, paracasei, subsp, log, probioticos, lactobacillus","fermentacao, durante, apos, atividade, viabilidade, ufc, probioticos, log, producao, cepas",0.012861919460467096
-21,"catd, sod, estresse_oxidativo, cat, gpx, biomarcadores, superoxido_dismutase, tbars, catalase, antioxidantes","estresse_oxidativo, atividade, antioxidantes, biomarcadores, grupo, aumento, niveis, enzimas, grupos, maior",0.01281649107343734
-19,"prandial, ccm, ages, wpc, voluntarias, glicacao, curcumina, amendoim, castanha, prandiais","consumo, apos, estudo, concentracoes, efeito, pos, aumento, grupo, ingestao, reducao",0.012379815151177654
-14,"tomate, coco, bico, coccao, grao, cafe, cana, cultivar, alcoolico, cultivo","teor, amostras, cafe, maior, teores, apresentaram, coccao, agua, relacao, valor",0.011348584340174744
-5,"adipocitos, inguinal, tam, mesenterico, edl, epididimal, tecido_adiposo, tecido_adiposo_branco, retroperitoneal, marrom","animais, grupo, grupos, tecido_adiposo, maior, relacao, peso, apresentaram, adipocitos, apresentou",0.011269305316226219
-6,"cho, prova, desempenho, enxague, exercicios, caf, potencia, bcaa, motor, ciclismo","desempenho, cho, sobre, teste, forca, efeitos, exercicio, treinamento, durante, intensidade",0.011161359453273964
-59,"snp, snps, alelos, alelo, dm2, hla, fto, polimorfismos, rs9939609, polimorfismo","dm2, individuos, gene, doenca, polimorfismo, gluten, genotipo, polimorfismos, risco, alelo",0.01067452337646702
-28,"simbiotico, microbiota_intestinal, intestinal, yacon, disbiose, microbiota, fezes, permeabilidade_intestinal, colon, bifidobacterium","microbiota_intestinal, intestinal, grupo, grupos, microbiota, fezes, composicao, efeito, simbiotico, probioticos",0.010438538485339937
-25,"shr, doses, emax, paracetamol, cmg, dexametasona, psl, vascular, plaquetaria, mucosite","tratamento, animais, grupo, grupos, dose, efeito, dias, reducao, tratados, niveis",0.010030836132262345
-57,"pandemia, sars, pandemia_covid_19, cov, covid_19, virus, distanciamento, coronavirus, zika, infeccao","covid_19, pandemia_covid_19, durante, pandemia, estudo, social, mudanca, infeccao, virus, ansiedade",0.009756507661630076
-7,"restricao_proteica, ilhotas, ovx, lphc, dieta_hipoproteica, sham, prenhes, ratas, prenhez, cnp","grupo, grupos, dieta, ratos, ratas, proteina, maior, relacao, menor, durante",0.009742045302407463
-32,"dac, cortical, memoria, labirinto, cruz, alastrante, cerebral, cortex, propagacao, excitabilidade","dac, animais, grupos, ansiedade, cerebral, dias, durante, comportamentais, comportamento, sobre",0.009351046402101397
-42,"oleo_peixe, capsulas, suplementacao, efeitos_suplementacao, placebo, epa, ensaio_clinico_randomizado, cego, dex, albumina","suplementacao, placebo, grupo, pacientes, pcr, estudo, dia, grupos, oleo_peixe, durante",0.009135505026914261
-4,"jogadores, jogos, sessao, jogo, militares, treino, exercicio, imediatamente, treinar, equipes","exercicio, apos, exercicio_fisico, intensidade, estudo, treinamento, sessao, durante, tempo, jogadores",0.0089881193475919
-44,"mcf, ecv, propolis, cancer_mama, ccr, tumorais, recidiva, antitumoral, neoplasia, wcrf","celulas, cancer_mama, tratamento, propolis, cancer, efeito, celular, mcf, efeitos, pre",0.008819141738304025
-41,"encapsulacao, nanoparticulas, microparticulas, particulas, ftir, zeta, encapsulado, gelatina, astaxantina, encapsulados","oleo, proteina, quanto, nanoparticulas, apresentaram, particulas, estabilidade, potencial, tamanho, eficiencia",0.00825584839175268
-46,"caprino, vaca, leite, leite_humano, lactentes, formulas, nbcal, cabra, leites, leite_materno","leite, lactentes, formulas, leite_humano, vaca, queijo, amostras, leite_materno, queijos, caprino",0.007709202649518034
-16,"tocoferol, agpi, caroteno, ags, folico, acidos_graxos, dha, omega, monoinsaturados, vitamina","acidos_graxos, acido, concentracoes, vitamina, 100g, caroteno, vitaminas, agpi, concentracao, lipidios",0.007642203094704605
-23,"kefir, treinamento_fisico, resistido, treinado, msg, treinamento, sedentario, sal, obeso, treinados","grupos, treinamento, kefir, semanas, animais, treinamento_fisico, semana, ratos, parametros, grupo",0.007568740176135089
-60,"placenta, mir, placentario, femeas, let, fetal, desmame_precoce, placentaria, expressao, ciur","expressao, mir, femeas, aumento, expressao_genica, placenta, machos, alem, apresentaram, alteracoes",0.007320176833972034
-40,"chia, brs, sorgo, feijao, biodisponibilidade, feijoes, carioca, taninos, extrusado, farinha","chia, sorgo, farinha, feijao, ferro, brs, biodisponibilidade, maior, consumo, compostos_fenolicos",0.006706598599211006
-13,"hiperalgesia, parkin, dor, contracao, p2x3, regeneracao, neutrofilos, musculares, persistente, pparg","muscular, dor, hiperalgesia, receptores, processo, tecido, il_6, fase, celulas, camundongos",0.0061884931555670425
-1,"mthfr, metilacao, hipertensas, c677t, citrulina, vegf, adrb3, metabolitos, metabolomico, malato","metilacao, niveis, gene, perfil, mthfr, grupos, estudo, mulheres, valores, grupo",0.005599731448219092
-55,"piperina, mdr, h2o2, endoteliais, linhagens, ase, especiarias, menadiona, cpp, eros","celulas, celular, expressao, efeito, piperina, producao, linhagens, sobre, acido, compostos",0.005525725217528167
-48,"dm1, silico, s6ks, s6k2, ittp, ulceras, isoformas, eif2, alvos, tripsina","dm1, diabetes, estudos, tratamento, estudo, agrotoxicos, cancer, sendo, pode, ser",0.005097767485698645
-50,"uva, vinhos, polifenois, gergelim, climaticas, uvas, tinto, vinho, suco_uva, residuos","polifenois, uva, residuos, alimentos, totais, dados, estudo, produtos, ingestao, consumo",0.0050218197767824165
-65,"gostos, gustativa, amargo, basicos, acerto, hipossodica, salgado, reconhecimento, neurodegenerativas, olfatoria","teste, individuos, reconhecimento, deteccao, amargo, gostos, zinco, basicos, gustativa, pacientes",0.0010134857739080225
+52,"ean, profissionais, gestores, educacao_alimentar_nutricional, aprendizagem","acoes, saude, profissionais, nutricao, sobre",0.033418571737676005
+56,"sintomas_depressivos, has, depressao, alcool, sintomas_ansiedade","prevalencia, associacao, mulheres, anos, maior",0.030582429888136253
+2,"adolescentes, meninas, excesso_peso, meninos, escolares","adolescentes, excesso_peso, anos, escolares, idade",0.03020571221777989
+12,"padroes_alimentares, aup, ultraprocessados, padrao_alimentar, consumo_alimentos","consumo, alimentos, consumo_alimentar, consumo_alimentos, ultraprocessados",0.030066280685425644
+31,"risco_cardiovascular, sindrome_metabolica, hdl_c, ldl_c, pressao_arterial","pressao_arterial, colesterol_total, triglicerideos, risco, perfil_lipidico",0.027692864679647503
+63,"criancas, crianca, alimentacao_complementar, aleitamento_materno, infantil","criancas, meses, idade, crianca, maes",0.026959903893459255
+22,"comensalidade, sentidos, sisan, significados, saberes","alimentacao, campo, sobre, pesquisa, estudo",0.02549726579014902
+36,"pnae, alimentacao_escolar, programa_nacional_alimentacao_escolar, agricultura_familiar, cardapios","alimentos, alimentacao_escolar, pnae, cardapios, programa",0.023816945157172576
+17,"inseguranca_alimentar, familias, pbf, domicilios, capita","inseguranca_alimentar, familias, situacao, renda, domicilios",0.023043469644245668
+61,"cirurgia_bariatrica, intervencao, cirurgia, operatorio, grupo_intervencao","intervencao, apos, reducao, meses, grupos",0.022577608104814725
+9,"glim, asg, uti, admissao, internacao","pacientes, desnutricao, mortalidade, tempo, internacao",0.02203573935736042
+51,"micronutrientes, macronutrientes, energia, nutrientes, carboidratos","consumo, ingestao, dieta, consumo_alimentar, energia",0.021526885399169516
+30,"dcnt, paises, custos, temporal, doencas_cronicas_transmissiveis","saude, brasil, populacao, paises, dcnt",0.021512847737908597
+27,"iid, angulo_fase, roc, tav, rce","imc, indice, composicao_corporal, correlacao, valores",0.02130576308598016
+3,"pubmed, scopus, lilacs, medline, revisao_sistematica","estudos, artigos, revisao_sistematica, dados, revisao",0.02119437925000231
+43,"polpa, cerrado, tucum, extratos, xique","polpa, atividade_antioxidante, totais, compostos_fenolicos, frutos",0.020590501283200266
+24,"idade_gestacional, gpg, trimestre, gestantes, pre_natal","gestantes, gestacao, mulheres, gestacional, pre_natal",0.020463139677313377
+64,"paes, textura, aceitabilidade, tecnologicas, aceitacao","farinha, formulacoes, aceitacao, produtos, adicao",0.019894129308629677
+54,"prole, filhotes, perinatal, lactacao, desmame","dieta, dias, prole, lactacao, durante",0.019721665380452346
+49,"imagem_corporal, transtornos_alimentares, insatisfacao_corporal, comportamentos_alimentares, comer","percepcao, sobre, imagem_corporal, comer, relacao",0.0192921744157406
+26,"sarcopenia, idosos, dinapenia, fpm, idosas","idosos, sarcopenia, massa_muscular, anos, idade",0.019222298642548232
+18,"leptina, adiponectina, obesidade, sobrepeso, adipocinas","obesidade, mulheres, leptina, sobrepeso, grupo",0.018712258698513125
+10,"anemia, vitamina_d, deficiencia, hipovitaminose_d, hepcidina","vitamina_d, ferro, deficiencia, anemia, niveis",0.017635790595064763
+47,"especialistas, instrumento, ivc, confiabilidade, validacao_conteudo","instrumento, itens, avaliacao, validacao, validade",0.01750475837551938
+20,"dialise, hemodialise, doenca_renal_cronica, transplante, drc","pacientes, drc, doenca, individuos, grupo",0.017336545348460904
+45,"seguranca_alimentos, manipuladores, manipuladores_alimentos, boas, contaminacao","amostras, alimentos, praticas, risco, contaminacao",0.017076196093796892
+15,"rotulos, rotulagem, alimentos_industrializados, ingredientes, receitas","alimentos, produtos, consumidores, sodio, sobre",0.01621263596280759
+62,"sono, trabalhadores, turno, estudantes_universitarios, omissao","sono, trabalho, refeicoes, estudantes, trabalhadores",0.015744131018816925
+38,"oeov, cim, biofilme, oero, aureus","isolados, cepas, cim, bacterias, crescimento",0.015639118154800846
+35,"7nachr, sinalizacao, gpr120, hipotalamo, lps","aumento, insulina, animais, camundongos, via",0.015614344237656199
+39,"qualidade_vida, qvrs, disfagia, whoqol, sintomas","qualidade_vida, pacientes, tratamento, estado_nutricional, sintomas",0.015586638780444391
+58,"ultrassom, secagem, extracao, termossonicacao, temperatura","extracao, tempo, temperatura, ultrassom, amostras",0.015501213724314384
+34,"qualidade_dieta, pontuacao, iqd, pontuacoes, ias","dieta, pontuacao, qualidade_dieta, alimentacao, qualidade",0.015382936083051968
+53,"dmo, tmb, equacoes, dxa, ger","composicao_corporal, equacoes, dmo, dxa, estudo",0.015021459872103427
+33,"exaustao, cafeina, pla, atletas, corredores","atletas, teste, cafeina, placebo, apos",0.01416938211788645
+37,"cha_verde, diabeticos, stz, diabetico, dieta_hiperlipidica","grupo, grupos, animais, dieta_hiperlipidica, dieta",0.01353548302275488
+11,"ambiente_alimentar, entorno, estabelecimentos, desertos, cantinas","estabelecimentos, ambiente_alimentar, alimentos, ambiente, maior",0.01318809132484159
+29,"linhaca, oleo_coco, virgem, oleo, ain","dieta, oleo, grupo, grupos, animais",0.013094910381581976
+8,"fermentacao, probioticas, casei, colonica, fermentado","fermentacao, durante, apos, atividade, viabilidade",0.012861919460467096
+21,"catd, sod, estresse_oxidativo, cat, gpx","estresse_oxidativo, atividade, antioxidantes, biomarcadores, grupo",0.01281649107343734
+19,"prandial, ccm, ages, wpc, voluntarias","consumo, apos, estudo, concentracoes, efeito",0.012379815151177654
+14,"tomate, coco, bico, coccao, grao","teor, amostras, cafe, maior, teores",0.011348584340174744
+5,"adipocitos, inguinal, tam, mesenterico, edl","animais, grupo, grupos, tecido_adiposo, maior",0.011269305316226219
+6,"cho, prova, desempenho, enxague, exercicios","desempenho, cho, sobre, teste, forca",0.011161359453273964
+59,"snp, snps, alelos, alelo, dm2","dm2, individuos, gene, doenca, polimorfismo",0.01067452337646702
+28,"simbiotico, microbiota_intestinal, intestinal, yacon, disbiose","microbiota_intestinal, intestinal, grupo, grupos, microbiota",0.010438538485339937
+25,"shr, doses, emax, paracetamol, cmg","tratamento, animais, grupo, grupos, dose",0.010030836132262345
+57,"pandemia, sars, pandemia_covid_19, cov, covid_19","covid_19, pandemia_covid_19, durante, pandemia, estudo",0.009756507661630076
+7,"restricao_proteica, ilhotas, ovx, lphc, dieta_hipoproteica","grupo, grupos, dieta, ratos, ratas",0.009742045302407463
+32,"dac, cortical, memoria, labirinto, cruz","dac, animais, grupos, ansiedade, cerebral",0.009351046402101397
+42,"oleo_peixe, capsulas, suplementacao, efeitos_suplementacao, placebo","suplementacao, placebo, grupo, pacientes, pcr",0.009135505026914261
+4,"jogadores, jogos, sessao, jogo, militares","exercicio, apos, exercicio_fisico, intensidade, estudo",0.0089881193475919
+44,"mcf, ecv, propolis, cancer_mama, ccr","celulas, cancer_mama, tratamento, propolis, cancer",0.008819141738304025
+41,"encapsulacao, nanoparticulas, microparticulas, particulas, ftir","oleo, proteina, quanto, nanoparticulas, apresentaram",0.00825584839175268
+46,"caprino, vaca, leite, leite_humano, lactentes","leite, lactentes, formulas, leite_humano, vaca",0.007709202649518034
+16,"tocoferol, agpi, caroteno, ags, folico","acidos_graxos, acido, concentracoes, vitamina, 100g",0.007642203094704605
+23,"kefir, treinamento_fisico, resistido, treinado, msg","grupos, treinamento, kefir, semanas, animais",0.007568740176135089
+60,"placenta, mir, placentario, femeas, let","expressao, mir, femeas, aumento, expressao_genica",0.007320176833972034
+40,"chia, brs, sorgo, feijao, biodisponibilidade","chia, sorgo, farinha, feijao, ferro",0.006706598599211006
+13,"hiperalgesia, parkin, dor, contracao, p2x3","muscular, dor, hiperalgesia, receptores, processo",0.0061884931555670425
+1,"mthfr, metilacao, hipertensas, c677t, citrulina","metilacao, niveis, gene, perfil, mthfr",0.005599731448219092
+55,"piperina, mdr, h2o2, endoteliais, linhagens","celulas, celular, expressao, efeito, piperina",0.005525725217528167
+48,"dm1, silico, s6ks, s6k2, ittp","dm1, diabetes, estudos, tratamento, estudo",0.005097767485698645
+50,"uva, vinhos, polifenois, gergelim, climaticas","polifenois, uva, residuos, alimentos, totais",0.0050218197767824165
+65,"gostos, gustativa, amargo, basicos, acerto","teste, individuos, reconhecimento, deteccao, amargo",0.0010134857739080225
