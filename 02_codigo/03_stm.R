@@ -134,7 +134,7 @@ stm_nutricao <- readRDS(file = "01_dados/stm65.RDS")
 # BETA
 beta_tb <- tidy(stm_nutricao, matrix = "beta") |>
   group_by(topic) |>
-  slice_max(beta, n = 5) |>
+  slice_max(beta, n = 10) |>
   summarise(
     BETA = paste(term, collapse = ", "),
     .groups = "drop"
@@ -143,7 +143,7 @@ beta_tb <- tidy(stm_nutricao, matrix = "beta") |>
 # FREX
 frex_tb <- tidy(stm_nutricao, matrix = "frex") |>
   group_by(topic) |>
-  slice_head(n = 5) |>
+  slice_head(n = 10) |>
   summarise(
     FREX = paste(term, collapse = ", "),
     .groups = "drop"
@@ -179,7 +179,7 @@ gamma_docs <- tidy(stm_nutricao, matrix = "gamma") |>
 # 3. Selecionar documentos mais representativos por tópico
 tabela_resumos <- gamma_docs |>
   group_by(topic) |>
-  slice_max(gamma, n = 3, with_ties = FALSE) |>
+  slice_max(gamma, n = 5, with_ties = FALSE) |>
   ungroup() |>
   left_join(dados_resumo, by = c("document" = "DOC_ID")) |>
   left_join(tabela_topicos, by = "topic") |>
@@ -208,7 +208,7 @@ stm_ano <- tidystm::extract.estimateEffect(
 )
 
 saveRDS(stm_ano, "01_dados/efeitoano-tidy_65stm.rds")
-
+stm_ano <- readRDS("01_dados/efeitoano-tidy_65stm.rds")
 
 # Gráfico
 ggplot(
@@ -220,6 +220,11 @@ ggplot(
     ymax = ci.upper
   )
 ) +
-  facet_wrap(~label, nrow = 5) +
+  facet_wrap(~label, nrow = 5, scales = "free_y") +
   geom_ribbon(alpha = .5) +
-  geom_line()
+  geom_line() +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )

@@ -286,7 +286,12 @@ ggplot(
     ymax = ci.upper
   )
 ) +
-  facet_wrap(~label, ncol = 4) +
+  facet_wrap(~label, nrow = 12, scales = "free_y") +
   geom_ribbon(alpha = .5) +
-  geom_line()
+  geom_line() +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
 ```
