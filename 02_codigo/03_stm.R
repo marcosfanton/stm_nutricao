@@ -134,16 +134,29 @@ stm_nutricao <- readRDS(file = "01_dados/stm65.RDS")
 # BETA
 beta_tb <- tidy(stm_nutricao, matrix = "beta") |>
   group_by(topic) |>
-  slice_max(beta, n = 10) |>
+  slice_max(beta, n = 5) |>
   summarise(
     BETA = paste(term, collapse = ", "),
     .groups = "drop"
   )
 
+# GRÁFICO BETA
+beta_plot <- tidy(stm_nutricao, matrix = "beta") |>
+  group_by(topic) |>
+  slice_max(beta, n = 5) |>
+  ungroup() |>
+  mutate(
+    term = reorder_within(term, beta, topic),
+    topic = paste("Tópico", topic)
+  )
+
+saveRDS(beta_plot, file = "01_dados/beta_plot.rds")
+
+
 # FREX
 frex_tb <- tidy(stm_nutricao, matrix = "frex") |>
   group_by(topic) |>
-  slice_head(n = 10) |>
+  slice_head(n = 5) |>
   summarise(
     FREX = paste(term, collapse = ", "),
     .groups = "drop"
