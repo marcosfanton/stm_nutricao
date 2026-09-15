@@ -179,6 +179,7 @@ tabela_topicos <- frex_tb |>
 # Salvar Tabela
 write_csv(tabela_topicos, "01_dados/tabela_65stm.csv")
 saveRDS(tabela_topicos, "01_dados/tabela_65stm.rds")
+tabela_topicos <- readRDS(file = "01_dados/tabela_65stm.rds")
 
 # TABELA RESUMOS
 dados_resumo <- readRDS(file = "01_dados/dados_resumos.RDS")
@@ -192,7 +193,7 @@ gamma_docs <- tidy(stm_nutricao, matrix = "gamma") |>
 # 3. Selecionar documentos mais representativos por tópico
 tabela_resumos <- gamma_docs |>
   group_by(topic) |>
-  slice_max(gamma, n = 5, with_ties = FALSE) |>
+  slice_max(gamma, n = 10, with_ties = FALSE) |>
   ungroup() |>
   left_join(dados_resumo, by = c("document" = "DOC_ID")) |>
   left_join(tabela_topicos, by = "topic") |>
@@ -200,7 +201,7 @@ tabela_resumos <- gamma_docs |>
   select(topic, FREX, DS_RESUMO, document)
 
 # Salvar Tabela Resumos
-write_csv(tabela_resumos, "01_dados/tabela_resumos-65stm.csv")
+write_csv(tabela_resumos, "01_dados/tabela_resumos-65stm-10.csv")
 saveRDS(tabela_resumos, "01_dados/tabela_resumos-65stm.rds")
 
 # Efeito ano ####
