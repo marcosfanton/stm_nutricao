@@ -4,7 +4,7 @@ library(here)
 library(tidytext)
 library(stopwords)
 
-# Abrir dados (n: 5.282)
+# Abrir dados (n: 5.280)
 dados <- readRDS(file = "01_dados/catalogo_limpo.RDS")
 
 # Função de limpeza de texto ####
