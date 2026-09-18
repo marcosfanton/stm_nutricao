@@ -170,14 +170,14 @@ catalogo_limpo <- catalogo_raw |>
   ) |>
   dplyr::mutate(DOC_ID00 = row_number())
 
-# Exclusão de 5 resumos em inglês detectados apenas posteriormente
+# Exclusão de 5 resumos em inglês detectados apenas posteriormente + 1 resumo duplicado (737)
 catalogo_limpo <- catalogo_limpo |>
-  dplyr::filter_out(DOC_ID00 %in% c(854, 987, 992, 2038, 5018)) |>
+  dplyr::filter_out(DOC_ID00 %in% c(737, 854, 987, 992, 2038, 5018)) |>
   dplyr::mutate(DOC_ID = row_number())
 
-# Salvar banco em .csv -- n: 5282
+# Salvar banco em .csv -- n: 5280
 catalogo_limpo |>
   readr::write_csv("01_dados/catalogo_limpo.csv")
 
-# Salvar banco em .RDS -- n: 5.282
+# Salvar banco em .RDS -- n: 5.280
 saveRDS(catalogo_limpo, file = "01_dados/catalogo_limpo.RDS")
