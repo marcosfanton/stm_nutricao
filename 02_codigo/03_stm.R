@@ -38,10 +38,10 @@ stopifnot(
 )
 
 # Heldout
-set.seed(4016325) # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
-
 heldout <- make.heldout(
-  documents = matriz
+  documents = matriz,
+  vocab = colnames(matriz),
+  seed = 4016325
 )
 
 # MODELOS PARA COMPARAÇÃO
@@ -155,7 +155,7 @@ saveRDS(beta_plot, file = "01_dados/beta_plot.rds")
 # FREX
 frex_tb <- tidy(stm_nutricao, matrix = "frex") |>
   group_by(topic) |>
-  slice_head(n = 5) |>
+  slice_max(n = 5) |>
   summarise(
     FREX = paste(term, collapse = ", "),
     .groups = "drop"
