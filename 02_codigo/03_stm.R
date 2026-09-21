@@ -54,7 +54,7 @@ muitos_k <- tibble(K = c(60, 65, 70, 75, 80)) |>
           documents = heldout$documents,
           vocab = heldout$vocab,
           K = k,
-          prevalence = ~AN_BASE,
+          prevalence = ~ s(AN_BASE),
           seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
           data = metadados,
           init.type = "Spectral"
@@ -118,7 +118,7 @@ resultado_k |>
 # Modelo STM: 65 Tópicos ####
 stm_nutricao <- stm(
   documents = matriz,
-  K = 67,
+  K = 65,
   prevalence = ~ s(AN_BASE),
   seed = 4016325, # RANDOM.ORG - Timestamp: 2026-05-07 16:45:08 UTC
   data = metadados,
@@ -126,7 +126,7 @@ stm_nutricao <- stm(
 )
 
 # Salvar Análise
-saveRDS(stm_nutricao, file = "01_dados/stm67-teste1809.RDS")
+saveRDS(stm_nutricao, file = "01_dados/stm65.RDS")
 
 # tbl TÓPICO | FREX | BETA | GAMMA ####
 stm_nutricao <- readRDS(file = "01_dados/stm65.RDS")
@@ -176,7 +176,7 @@ tabela_topicos <- frex_tb |>
   arrange(desc(GAMMA))
 
 # Salvar Tabela
-write_csv(tabela_topicos, "01_dados/tabela_67stm-teste.csv")
+write_csv(tabela_topicos, "01_dados/tabela_65stm.csv")
 saveRDS(tabela_topicos, "01_dados/tabela_65stm.rds")
 tabela_topicos <- readRDS(file = "01_dados/tabela_65stm.rds")
 
@@ -200,7 +200,7 @@ tabela_resumos <- gamma_docs |>
   select(topic, FREX, DS_RESUMO, document)
 
 # Salvar Tabela Resumos
-write_csv(tabela_resumos, "01_dados/tabela_resumos-67stm-teste.csv")
+write_csv(tabela_resumos, "01_dados/tabela_resumos-65stm.csv")
 saveRDS(tabela_resumos, "01_dados/tabela_resumos-65stm.rds")
 
 # Efeito ano ####
