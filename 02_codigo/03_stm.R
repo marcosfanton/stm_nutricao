@@ -40,7 +40,6 @@ stopifnot(
 # Heldout
 heldout <- make.heldout(
   documents = matriz,
-  vocab = colnames(matriz),
   seed = 4016325
 )
 
