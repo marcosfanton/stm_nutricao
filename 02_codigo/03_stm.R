@@ -44,9 +44,11 @@ heldout <- make.heldout(
 )
 
 # MODELOS PARA COMPARAÇÃO
+plan(multisession)
+
 muitos_k <- tibble(K = c(60, 65, 70, 75, 80)) |>
   mutate(
-    topic_model = purrr::map(
+    topic_model = furrr::future_map(
       K,
       \(k) {
         stm(
@@ -58,9 +60,12 @@ muitos_k <- tibble(K = c(60, 65, 70, 75, 80)) |>
           data = metadados,
           init.type = "Spectral"
         )
-      }
+      },
+      .options = furrr_options(seed = TRUE)
     )
   )
+
+plan(sequential)
 
 saveRDS(muitos_k, file = "01_dados/stm65-80.RDS")
 muitos_k <- readRDS("01_dados/stm65-80.RDS")
@@ -103,8 +108,7 @@ resultado_k |>
 # Gráfico de diagnóstico - Coerência Semântica x Exclusividade
 resultado_k |>
   select(K, exclusivity, semantic_coherence) |>
-  filter(K %in% c(60, 65, 70, 75, 80)) |>
-  unnest() |>
+  unnest(c(exclusivity, semantic_coherence)) |>
   mutate(K = as.factor(K)) |>
   ggplot(aes(semantic_coherence, exclusivity, color = K)) +
   geom_point(size = 2, alpha = 0.7) +
@@ -154,7 +158,7 @@ saveRDS(beta_plot, file = "01_dados/beta_plot.rds")
 # FREX
 frex_tb <- tidy(stm_nutricao, matrix = "frex") |>
   group_by(topic) |>
-  slice_max(n = 5) |>
+  slice_head(n = 5) |>
   summarise(
     FREX = paste(term, collapse = ", "),
     .groups = "drop"

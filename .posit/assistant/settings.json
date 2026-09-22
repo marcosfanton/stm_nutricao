@@ -1,0 +1,11 @@
+{
+  "permission": {
+    "executeCode": {
+      "*": "allow"
+    },
+    "bash": {
+      "Rscript *": "allow",
+      "head *": "allow"
+    }
+  }
+}
