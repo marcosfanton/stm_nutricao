@@ -172,6 +172,8 @@ gamma_tb <- tidy(stm_nutricao, matrix = "gamma") |>
     .groups = "drop"
   )
 
+gamma <- saveRDS(here::here("01_dados", "gamma_tbl.rds")
+
 # TABELA TÓPICOS
 tabela_topicos <- frex_tb |>
   left_join(beta_tb, by = "topic") |>
