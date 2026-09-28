@@ -98,3 +98,4 @@ dados_stm <- dados_stm |>
 
 # Salvar banco de dados
 saveRDS(dados_stm, file = "01_dados/dados_prestm.RDS")
+dados <- readRDS(file = "01_dados/dados_prestm.RDS")

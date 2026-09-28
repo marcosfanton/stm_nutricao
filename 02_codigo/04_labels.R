@@ -4,14 +4,17 @@ library(here)
 library(uwot)
 
 stm_nutricao <- readRDS(here::here("01_dados", "stm65.RDS"))
-rotulos <- read.csv2(here::here("01_dados", "tabela_labels-10.csv"))
+rotulos <- read.csv(here::here("01_dados", "tabela_rotulos.csv"))
 metadados <- readRDS("01_dados/dados_resumos.RDS")
-########################### MODIFICAR LABEL POR ROTULO ############
+
 # UMAP - Documentos ####
+# Filtrar tópicos não interpretáveis ("Excluído" - 5 e 55)
+rotulos <- rotulos |> dplyr::filter_out(categoria == "Excluído")
+
 # Matriz Gamma
 gamma <- stm_nutricao$theta |>
-  as_tibble(.name_repair = "minimal") |>
-  set_names(as.character(1:65)) |>
+  as_tibble(.name_repair = ~ as.character(seq_along(.x))) |>
+  select(all_of(as.character(rotulos$topic))) |>
   mutate(DOC_ID = metadados$DOC_ID, .before = 1)
 
 # Tópicos Dominantes por Documento
@@ -23,7 +26,7 @@ gamma_docs <- gamma |>
     names_transform = as.integer
   ) |>
   mutate(gamma = gamma / sum(gamma), .by = DOC_ID) |>
-  left_join(rotulos |> select(topic, categoria, label), by = "topic")
+  left_join(rotulos |> select(topic, categoria, rotulo), by = "topic")
 
 # Categoria Dominante em cada Documento
 categorias <- gamma_docs |>
@@ -56,6 +59,7 @@ umap_topic <- umap_docs |>
   left_join(categorias, by = "DOC_ID") |>
   left_join(topicos, by = "DOC_ID")
 
+# Gráfico UMAP #
 umap_topic |>
   ggplot(
     aes(
