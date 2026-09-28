@@ -24,6 +24,16 @@ tidy_ano <- tidystm::extract.estimateEffect(
   n = 2
 )
 
+ggplot(
+  tidy_ano,
+  aes(covariate.value, estimate, ymin = ci.lower, ymax = ci.upper)
+) +
+  facet_wrap(~label, scales = "free_y") +
+  geom_ribbon(alpha = .5) +
+  geom_line() +
+  labs(x = "Ano", y = "Proporção esperada do tópico")
+
+
 # TABELA COM 10 TÓPICOS MAIS PREVALENTES POR ANO ####
 theta_ano <- as_tibble(
   stm_nutricao$theta,
