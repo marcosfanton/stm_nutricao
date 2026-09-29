@@ -45,7 +45,7 @@ umap_docs <- gamma |>
   as.matrix() |>
   uwot::umap(
     n_neighbors = 15,
-    min_dist = 0.1,
+    min_dist = 0.8,
     metric = "cosine",
     seed = 10657, # RANDOM.ORG 2026-09-25 18:11:09 UTC
     n_threads = 1,
@@ -69,7 +69,7 @@ umap_topic |>
     )
   ) +
   geom_point(
-    #alpha = 0.4,
+    alpha = 0.8,
     size = 2
   ) +
   labs(
