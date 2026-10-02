@@ -1,5 +1,6 @@
 # Pacotes
 library(tidyverse)
+library(here)
 library(gt)
 library(geobr)
 library(sf)
@@ -27,7 +28,7 @@ graf_ano <- dados |>
       mutate(NM_GRAU_ACADEMICO = "TOTAL")
   )
 
-graf_ano |>
+fig1 <- graf_ano |>
   ggplot(aes(AN_BASE, n, color = NM_GRAU_ACADEMICO)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
@@ -39,6 +40,17 @@ graf_ano |>
     title = "Evolução de dissertações e teses por ano"
   ) +
   theme_minimal()
+
+# Salvar gráfico
+ggsave(
+  filename = here("04_relatorio", "fig1_ano.png"),
+  plot = fig1,
+  width = 8,
+  height = 5,
+  dpi = 300,
+  bg = "white"
+)
+
 
 # TABELA ANO ####
 tab_ano <- dados |>
@@ -67,10 +79,13 @@ tab_ano <- tab_ano |>
   )
 
 # Tabela
-tab_ano |>
+tab1_ano <- tab_ano |>
   gt() |>
   fmt_number(columns = ends_with("_FREQ"), decimals = 1, dec_mark = ",") |>
-  cols_merge(columns = c(MESTRADO_N, MESTRADO_FREQ), pattern = "{1} ({2}%)") |>
+  cols_merge(
+    columns = c(MESTRADO_N, MESTRADO_FREQ),
+    pattern = "{1} ({2}%)"
+  ) |>
   cols_merge(
     columns = c(DOUTORADO_N, DOUTORADO_FREQ),
     pattern = "{1} ({2}%)"
@@ -84,14 +99,17 @@ tab_ano |>
     TOTAL_N = "Total"
   )
 
+# Salvar Tabela 1
+gtsave(tab1_ano, here("04_relatorio", "tab1_ano.html"))
+
 # UF ####
 base_uf <- dados |>
-  count(SG_UF_IES) |> 
-  mutate(FREQ = n /sum(n)*100) |> 
+  count(SG_UF_IES) |>
+  mutate(FREQ = n / sum(n) * 100) |>
   arrange(desc(n))
 
 # Tabela UF
-base_uf |>
+tab2_uf <- base_uf |>
   bind_rows(
     summarise(base_uf, SG_UF_IES = "Total", n = sum(n), FREQ = sum(FREQ))
   ) |>
@@ -106,6 +124,9 @@ base_uf |>
     locations = cells_body(rows = SG_UF_IES == "Total")
   )
 
+# Salvar Tabela 2 - UF
+gtsave(tab2_uf, here("04_relatorio", "tab2_uf.html"))
+
 # Mapa do Brasil
 ufs <- read_state(year = 2020, showProgress = FALSE)
 
@@ -115,10 +136,13 @@ mapa_uf <- ufs |>
 ggplot(mapa_uf) +
   geom_sf(aes(), color = "white", linewidth = 0.2) +
   geom_sf_text(
-    aes(label = ifelse(
-      is.na(FREQ), "",
-      scales::number(FREQ, accuracy = 0.1, decimal.mark = ",")
-    )),
+    aes(
+      label = ifelse(
+        is.na(FREQ),
+        "",
+        scales::number(FREQ, accuracy = 0.1, decimal.mark = ",")
+      )
+    ),
     size = 2
   ) +
   theme_void() +
