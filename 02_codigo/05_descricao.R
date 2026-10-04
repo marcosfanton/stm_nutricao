@@ -51,7 +51,6 @@ ggsave(
   bg = "white"
 )
 
-
 # TABELA ANO ####
 tab_ano <- dados |>
   count(AN_BASE, NM_GRAU_ACADEMICO) |>
