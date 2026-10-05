@@ -67,14 +67,17 @@ tab3_gamma <- bind_rows(categorias_tb, topicos_tb) |>
 gtsave(tab3_gamma, here("04_relatorio", "tab3_gamma.html"))
 gtsave(tab3_gamma, here("04_relatorio", "tab3_gamma.docx"))
 
-
 # EFEITO ANO ####
+set.seed(64377) # 2026-10-05 13:12:48 UTC
 efeito_ano <- stm::estimateEffect(
   1:65 ~ s(AN_BASE, df = 3),
   stmobj = stm_nutricao,
   metadata = metadados
 )
+# Salvar Análise
+saveRDS(efeito_ano, here::here("01_dados", "efeito_ano.RDS"))
 
+set.seed(64377)
 # Extração dos efeitos
 tidy_ano <- tidystm::extract.estimateEffect(
   x = efeito_ano,
@@ -84,6 +87,8 @@ tidy_ano <- tidystm::extract.estimateEffect(
   labeltype = "frex",
   n = 2
 )
+# Salvar análise
+saveRDS(tidy_ano, here::here("01_dados", "efeito_ano-tidy.RDS"))
 
 tidy_ano <- tidy_ano |>
   left_join(rotulos, by = "topic")
@@ -231,3 +236,35 @@ top10_tab2 <- top10 |>
 # Salvar Tabela 5
 # Completa
 gtsave(top10_tab2, here("04_relatorio", "top10n.html"))
+
+# Gráfico Top10
+fig5_top10 <- top10 |>
+  ggplot(aes(factor(AN_BASE), posicao, fill = categoria)) +
+  geom_tile(color = "white", alpha = .6) +
+  geom_text(aes(label = str_wrap(rotulo, 16)), size = 3, lineheight = 1) +
+  scale_x_discrete(position = "top") +
+  scale_y_reverse(breaks = 1:10, expand = c(0, 0)) +
+  scale_fill_manual(values = unname(palette.colors(palette = "Tableau 10"))) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = NULL,
+    title = "Top10 Tópicos por Ano"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    panel.grid = element_blank(),
+    axis.text.x.top = element_text(face = "bold", size = 16),
+    margin = margin(b = 2)
+  )
+
+# Salvar gráfico
+ggsave(
+  here("04_relatorio", "fig5_top10.png"),
+  plot = fig5_top10,
+  width = 16,
+  height = 9,
+  dpi = 300,
+  bg = "white"
+)
