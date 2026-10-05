@@ -187,7 +187,7 @@ topcats <- gamma_doc |>
   arrange(AN_BASE, desc(gamma_cat))
 
 # Gráfico
-topcats |>
+fig4_catsano <- topcats |>
   filter_out(categoria == "Excluído") |>
   ggplot(aes(AN_BASE, gamma_cat, color = categoria)) +
   geom_line(linewidth = 1) +
@@ -203,7 +203,7 @@ topcats |>
 # Salvar Gráfico
 ggsave(
   filename = here("04_relatorio", "fig4_catsano.png"),
-  plot = fig3,
+  plot = fig4_catsano,
   width = 14,
   height = 12,
   dpi = 300,
