@@ -192,20 +192,25 @@ fig4_catsano <- topcats |>
   ggplot(aes(AN_BASE, gamma_cat, color = categoria)) +
   geom_line(linewidth = 1) +
   scale_color_manual(values = unname(palette.colors(palette = "Tableau 10"))) +
+  guides(color = guide_legend(override.aes = list(linewidth = 2))) +
   labs(
     x = "Ano",
     y = "%",
     color = NULL,
-    title = "Prevalência Estimada das Categorias por Ano"
+    title = "Prevalência Categorias por Ano"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 6)
+  )
 
 # Salvar Gráfico
 ggsave(
   filename = here("04_relatorio", "fig4_catsano.png"),
   plot = fig4_catsano,
-  width = 14,
-  height = 12,
+  width = 10,
+  height = 6,
   dpi = 300,
   bg = "white"
 )
