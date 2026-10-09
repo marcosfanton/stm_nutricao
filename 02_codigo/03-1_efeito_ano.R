@@ -5,11 +5,14 @@ library(tidyr)
 library(tidystm)
 library(tidytext)
 library(gt)
+library(patchwork)
 
 # Bancos
 stm_nutricao <- readRDS(here::here("01_dados", "stm65.RDS"))
-rotulos <- read.csv(here::here("01_dados", "tabela_rotulos.csv"))
 metadados <- readRDS("01_dados/dados_resumos.RDS")
+rotulos <- read.csv(here::here("01_dados", "tabela_rotulos.csv")) |>
+  mutate(categoria = str_squish(categoria))
+paleta_categorias <- readRDS(here::here("03_figs", "paleta_categorias.RDS"))
 
 # Descrição Prevalência (gamma) Total ####
 # Tabela Gamma
@@ -29,6 +32,7 @@ gamma_tb <- gamma_doc |>
   left_join(rotulos, by = "topic") |>
   mutate(total = sum(GAMMA), .by = categoria) |>
   arrange(desc(total), desc(GAMMA))
+
 
 topicos_tb <- gamma_tb |>
   mutate(tipo = "topico")
@@ -67,6 +71,138 @@ tab3_gamma <- bind_rows(categorias_tb, topicos_tb) |>
 gtsave(tab3_gamma, here("04_relatorio", "tab3_gamma.html"))
 gtsave(tab3_gamma, here("04_relatorio", "tab3_gamma.docx"))
 
+
+# TABELA TOP10 TÓPICOS ####
+top10_topicos <- gamma_tb |>
+  mutate(categoria = str_squish(categoria)) |>
+  filter_out(categoria == "Excluído") |>
+  slice_max(GAMMA, n = 10, with_ties = FALSE) |>
+  pull(topic)
+
+rotulos_top10 <- tidy_ano |>
+  distinct(topic, rotulo) |>
+  mutate(rotulo = str_wrap(str_squish(rotulo), 30)) |>
+  tibble::deframe()
+
+
+tidy_ano |>
+  filter(topic %in% top10_topicos) |>
+  mutate(
+    categoria = factor(
+      str_squish(categoria),
+      levels = names(paleta_categorias)
+    ),
+    topic = factor(topic, levels = top10_topicos)
+  ) |>
+  ggplot(
+    aes(
+      covariate.value,
+      estimate,
+      ymin = ci.lower,
+      ymax = ci.upper
+    )
+  ) +
+  geom_ribbon(aes(fill = categoria), alpha = .2) +
+  geom_line(aes(color = categoria), linewidth = 1) +
+  scale_color_manual(
+    values = paleta_categorias,
+    aesthetics = c("color", "fill")
+  ) +
+  facet_wrap(
+    ~topic,
+    ncol = 5,
+    scales = "free_y",
+    labeller = as_labeller(rotulos_top10)
+  ) +
+  guides(
+    color = guide_legend(
+      ncol = 3,
+      override.aes = list(linewidth = 3, alpha = 1)
+    ),
+    fill = "none"
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    color = NULL,
+    title = "Efeito do ano sobre os dez tópicos mais prevalentes",
+    subtitle = paste0(
+      anos[1],
+      " a ",
+      anos[2],
+      " | escala vertical própria de cada painel"
+    ),
+    caption = "Fonte: Catálogo de Teses e Dissertações da CAPES"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 8),
+    strip.text = element_text(
+      size = 8,
+      hjust = 0,
+      lineheight = 0.9,
+      margin = margin(2, 0, 2, 0)
+    ),
+    panel.spacing = unit(8, "pt"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "grey40"),
+    plot.caption = element_text(color = "grey40", hjust = 1)
+  )
+
+top10_tb <- gamma_tb |>
+  mutate(categoria = str_squish(categoria)) |>
+  filter_out(categoria == "Excluído") |>
+  slice_max(GAMMA, n = 10, with_ties = FALSE) |>
+  select(rotulo, categoria, GAMMA)
+
+# Tabela
+
+top10_tb |>
+  gt(locale = "pt") |>
+  fmt_number(columns = GAMMA, decimals = 2) |>
+  cols_label(
+    rotulo = "Tópico",
+    categoria = "Categoria",
+    GAMMA = "γ (%)"
+  ) |>
+  tab_header(title = "Dez tópicos mais prevalentes no período") |>
+  tab_source_note("Fonte: Catálogo de Teses e Dissertações da CAPES") |>
+  cols_align(align = "left", columns = c(rotulo, categoria)) |>
+  cols_align(align = "right", columns = GAMMA) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = list(cells_title(groups = "title"), cells_column_labels())
+  ) |>
+  tab_style(
+    style = cell_text(align = "right"),
+    locations = cells_source_notes()
+  ) |>
+  tab_style(
+    style = cell_fill(color = "grey95"),
+    locations = cells_body(rows = seq(1, nrow(top10_tb), by = 2))
+  ) |>
+  data_color(
+    columns = categoria,
+    target_columns = everything(),
+    fn = \(x) unname(paleta_categorias[x]),
+    alpha = 0.5,
+    autocolor_text = FALSE
+  ) |>
+  tab_style(
+    style = cell_text(color = "black"),
+    locations = cells_body()
+  ) |>
+  tab_options(
+    data_row.padding = px(4),
+    table.font.size = px(14),
+    column_labels.border.bottom.color = "grey40",
+    table_body.hlines.color = "grey90"
+  )
+
 # EFEITO ANO ####
 set.seed(64377) # 2026-10-05 13:12:48 UTC
 efeito_ano <- stm::estimateEffect(
@@ -90,101 +226,96 @@ tidy_ano <- tidystm::extract.estimateEffect(
 # Salvar análise
 saveRDS(tidy_ano, here::here("01_dados", "efeito_ano-tidy.RDS"))
 
+#
+tidy_ano <- readRDS(here::here("01_dados", "efeito_ano-tidy.RDS"))
+
+# Inclusão de rótulos
 tidy_ano <- tidy_ano |>
   left_join(rotulos, by = "topic")
 
 # Gráfico sem padronização
-fig3_free <- tidy_ano |>
+fig3_free <-
+  tidy_ano |>
+  mutate(categoria = str_squish(categoria)) |>
   filter_out(categoria == "Excluído") |>
   mutate(
-    topic = forcats::fct_reorder(factor(topic), as.integer(factor(categoria)))
+    categoria = factor(categoria, levels = names(paleta_categorias)),
+    topic = forcats::fct_reorder(factor(topic), as.integer(categoria))
   ) |>
   ggplot(
     aes(
       covariate.value,
       estimate,
       ymin = ci.lower,
-      ymax = ci.upper,
+      ymax = ci.upper
     )
   ) +
-  geom_ribbon(alpha = .2) +
+  geom_ribbon(aes(fill = categoria), alpha = .2) +
   geom_line(aes(color = categoria), linewidth = .8) +
-  scale_color_manual(values = unname(palette.colors(palette = "Tableau 10"))) +
-  facet_wrap(~topic) +
-  guides(color = guide_legend(override.aes = list(linewidth = 3))) +
-  labs(x = "Ano", y = "") +
+  scale_color_manual(
+    values = paleta_categorias,
+    labels = \(x) str_wrap(x, 28),
+    aesthetics = c("color", "fill")
+  ) +
+  facet_wrap(
+    ~topic,
+    ncol = 9,
+    scales = "free_y",
+    labeller = as_labeller(rotulos_painel)
+  ) +
+  guides(
+    color = guide_legend(
+      #  ncol = 3,
+      override.aes = list(linewidth = 3, alpha = 1)
+    ),
+    fill = "none"
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    color = NULL,
+    title = "Efeito do ano sobre a prevalência dos tópicos",
+    subtitle = paste0(
+      anos[1],
+      " a ",
+      anos[2],
+      " | escala vertical própria de cada painel"
+    ),
+    caption = "Fonte: Catálogo de Teses e Dissertações da CAPES"
+  ) +
+  theme_minimal() +
   theme(
     legend.position = "top",
-    strip.text = element_text(size = 8),
-    axis.text = element_text(size = 6)
+    legend.text = element_text(size = 8),
+    legend.key.spacing.y = unit(4, "pt"),
+    strip.text = element_text(
+      size = 6,
+      hjust = 0,
+      lineheight = 0.9,
+      margin = margin(1, 0, 1, 0)
+    ),
+    panel.spacing = unit(3, "pt"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
+    axis.text = element_blank(),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "grey40"),
+    plot.caption = element_text(color = "grey40", hjust = 1)
   )
+
 
 # Salvar Gráfico
 ggsave(
-  filename = here("04_relatorio", "fig3_efeitoano_sempadronizacao.png"),
-  plot = fig3_free,
+  filename = here("04_relatorio", "teste.png"),
+  plot = teste,
   width = 14,
   height = 12,
   dpi = 300,
   bg = "white"
 )
 
-# Normalização de cada tópico
-tidy_ano <- tidy_ano |>
-  mutate(
-    media = mean(estimate),
-    indice = estimate / media,
-    indice_lower = ci.lower / media,
-    indice_upper = ci.upper / media,
-    .by = topic
-  ) |>
-  left_join(rotulos, by = "topic")
-
-# Gráfico
-fig3 <- tidy_ano |>
-  filter_out(categoria == "Excluído") |>
-  mutate(
-    topic = forcats::fct_reorder(factor(topic), as.integer(factor(categoria)))
-  ) |>
-  ggplot(
-    aes(
-      covariate.value,
-      indice,
-      ymin = indice_lower,
-      ymax = indice_upper,
-    )
-  ) +
-  geom_ribbon(alpha = .2) +
-  geom_line(aes(color = categoria), linewidth = .8) +
-  scale_color_manual(values = unname(palette.colors(palette = "Tableau 10"))) +
-  facet_wrap(~topic) +
-  coord_cartesian(ylim = c(-0.5, 2.5)) +
-  guides(color = guide_legend(override.aes = list(linewidth = 3))) +
-  labs(x = "Ano", y = "") +
-  theme(
-    legend.position = "top",
-    strip.text = element_text(size = 8),
-    axis.text = element_text(size = 6)
-  )
-
-# Salvar Gráfico
-ggsave(
-  filename = here("04_relatorio", "fig3_efeitoano.png"),
-  plot = fig3,
-  width = 14,
-  height = 12,
-  dpi = 300,
-  bg = "white"
-)
-
-# TABELA COM CATEGORIAS POR ANO ####
-topcats <- gamma_doc |>
-  summarise(gamma_topic = mean(gamma), .by = c(AN_BASE, topic, categoria)) |>
-  summarise(
-    gamma_cat = (sum(gamma_topic) * 100),
-    .by = c(AN_BASE, categoria)
-  ) |>
-  arrange(AN_BASE, desc(gamma_cat))
+# Gráfico com apenas os TOP10 ####
 
 # Gráfico
 fig4_catsano <- topcats |>
