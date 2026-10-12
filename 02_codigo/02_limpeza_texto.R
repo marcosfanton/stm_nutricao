@@ -28,7 +28,7 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
     )
 }
 # Limpeza das colunas DS_PALAVRA_CHAVE, DS_RESUMO
-dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, NM_PRODUCAO, DS_RESUMO))
+dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, DS_RESUMO))
 
 # Dicionário de NGRAMS ####
 ngrams <- read.csv("01_dados/nutrigrams.csv")
