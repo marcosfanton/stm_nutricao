@@ -556,11 +556,9 @@ ngrams <- tibble(
     "oleo chia"
   )
 )
-
 ngrams <- ngrams |>
   mutate(n_palavra = str_count(grams, " ") + 1) |>
   arrange(desc(n_palavra))
-
 
 # Salvar dicionário de ngrams
 ngrams |>

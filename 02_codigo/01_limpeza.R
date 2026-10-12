@@ -54,6 +54,7 @@ vars1112 <- c(
   "ResumoTese"
 )
 
+# Variáveis 2013-2024
 vars1324 <- c(
   "AN_BASE",
   "NM_ENTIDADE_ENSINO",

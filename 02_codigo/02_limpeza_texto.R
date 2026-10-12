@@ -28,7 +28,7 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
     )
 }
 # Limpeza das colunas DS_PALAVRA_CHAVE, DS_RESUMO
-dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, DS_RESUMO))
+dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, NM_PRODUCAO, DS_RESUMO))
 
 # Dicionário de NGRAMS ####
 ngrams <- read.csv("01_dados/nutrigrams.csv")
@@ -40,14 +40,12 @@ dicionario_grams <- ngrams |>
   ) |>
   deframe()
 
-# dicionario_grams <- set_names(n_grams$substituicao, n_grams$padrao)
-
 # Substituição dos NGRAMS na variável DS_RESUMO
 dados <- dados |>
   mutate(
     DS_RESUMO = str_replace_all(DS_RESUMO, dicionario_grams)
   ) |>
-  select(DOC_ID, AN_BASE, DS_RESUMO)
+  select(DOC_ID, AN_BASE, NM_PRODUCAO, DS_RESUMO)
 
 saveRDS(dados, file = "01_dados/dados_resumos.RDS")
 dados <- readRDS("01_dados/dados_resumos.RDS")
