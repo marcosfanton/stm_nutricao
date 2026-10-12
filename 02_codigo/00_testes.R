@@ -469,3 +469,138 @@ ggsave(
   dpi = 300,
   bg = "white"
 )
+
+# FUNÇÃO GRÁFICOS ####
+top10_ano <- top10_ano |>
+  mutate(
+    categoria = str_squish(categoria),
+    rotulo = str_squish(rotulo)
+  )
+graf_top10_destaque <- function(cat_sel) {
+  top10_ano |>
+    mutate(destaque = if_else(categoria == cat_sel, cat_sel, "Outras")) |>
+    ggplot(aes(factor(AN_BASE), posicao, fill = destaque)) +
+    geom_tile(color = "white", alpha = .6) +
+    geom_text(
+      aes(label = str_wrap(rotulo, 18), color = destaque == cat_sel),
+      size = 2.5,
+      lineheight = 0.9
+    ) +
+    scale_x_discrete(position = "top") +
+    scale_y_reverse(breaks = 1:10, expand = c(0, 0)) +
+    scale_fill_manual(
+      values = c(paleta_categorias[cat_sel], Outras = "grey92"),
+      breaks = cat_sel
+    ) +
+    scale_color_manual(
+      values = c("TRUE" = "black", "FALSE" = "grey60"),
+      guide = "none"
+    ) +
+    guides(fill = guide_legend(override.aes = list(alpha = .6))) +
+    labs(x = NULL, y = NULL, fill = NULL) +
+    theme_minimal() +
+    theme(
+      legend.position = "bottom",
+      legend.text = element_text(size = 9, face = "bold"),
+      panel.grid = element_blank(),
+      axis.text.x.top = element_text(
+        face = "bold",
+        size = 16,
+        margin = margin(b = 2)
+      ),
+      axis.text.y = element_text(face = "bold")
+    )
+}
+
+# Variação da prevalência de tópicos por ano inicial e final ####
+variacao_topicos <- tidy_ano |>
+  mutate(across(c(categoria, rotulo), str_squish)) |>
+  filter_out(categoria == "Excluído") |>
+  arrange(topic, covariate.value) |>
+  summarise(
+    inicial = first(estimate),
+    final = last(estimate),
+    .by = c(topic, rotulo, categoria)
+  ) |>
+  mutate(variacao = (final - inicial) * 100)
+
+# 5 maiores aumentos + 5 maiores quedas
+top_variacao <- bind_rows(
+  slice_max(variacao_topicos, variacao, n = 5, with_ties = FALSE),
+  slice_min(variacao_topicos, variacao, n = 5, with_ties = FALSE)
+) |>
+  mutate(
+    rotulo_painel = str_glue(
+      "{rotulo} ({scales::number(variacao, accuracy = 0.01, decimal.mark = ',', style_positive = 'plus')} p.p.)"
+    )
+  ) |>
+  select(topic, variacao, rotulo_painel)
+
+# Conferência
+top_variacao
+
+# Gráfico: tópicos com maior variação ####
+fig_variacao <- tidy_ano |>
+  inner_join(top_variacao, by = "topic") |>
+  mutate(
+    categoria = str_squish(categoria) |>
+      factor(levels = names(paleta_categorias)),
+    rotulo_painel = fct_reorder(rotulo_painel, variacao, .desc = TRUE)
+  ) |>
+  ggplot(
+    aes(
+      covariate.value,
+      estimate,
+      ymin = ci.lower,
+      ymax = ci.upper
+    )
+  ) +
+  geom_ribbon(aes(fill = categoria), alpha = .2) +
+  geom_line(aes(color = categoria), linewidth = .8) +
+  scale_color_manual(
+    values = paleta_categorias,
+    aesthetics = c("color", "fill")
+  ) +
+  scale_x_continuous(
+    breaks = seq(
+      min(tidy_ano$covariate.value),
+      max(tidy_ano$covariate.value),
+      by = 3
+    )
+  ) +
+  scale_y_continuous(
+    labels = scales::label_percent(accuracy = 0.1, decimal.mark = ",")
+  ) +
+  facet_wrap(
+    ~rotulo_painel,
+    ncol = 5,
+    scales = "free_y",
+    labeller = label_wrap_gen(width = 25)
+  ) +
+  guides(
+    color = guide_legend(
+      nrow = 1,
+      override.aes = list(linewidth = 3, alpha = 1)
+    ),
+    fill = "none"
+  ) +
+  labs(x = NULL, y = NULL, color = NULL) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 8, face = "bold"),
+    strip.text = element_text(
+      size = 9,
+      face = "bold",
+      hjust = 0,
+      lineheight = 0.9,
+      margin = margin(1, 0, 2, 0)
+    ),
+    panel.spacing = unit(8, "pt"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
+    axis.text = element_text(size = 6, color = "grey40")
+  )
+
+fig_variacao

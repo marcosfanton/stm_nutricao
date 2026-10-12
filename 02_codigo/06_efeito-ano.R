@@ -5,7 +5,7 @@ library(tidyr)
 library(tidystm)
 library(tidytext)
 library(gt)
-library(patchwork)
+library(ggfittext)
 
 # Bancos
 stm_nutricao <- readRDS(here::here("01_dados", "stm65.RDS"))
@@ -288,8 +288,60 @@ ggsave(
   dpi = 300,
   bg = "white"
 )
+# TABELA - TOP 10 TÓPICOS ####
+top10_tb <- gamma_tb |>
+  mutate(categoria = str_squish(categoria)) |>
+  filter_out(categoria == "Excluído") |>
+  slice_max(GAMMA, n = 10, with_ties = FALSE) |>
+  select(rotulo, categoria, GAMMA)
 
-# GRÁFICO 4 - TOP 10 TÓPICOS - EVOLUÇÃO POR ANO ####
+# Tabela Top 10
+tab5_top10 <-
+  top10_tb |>
+  gt(locale = "pt") |>
+  fmt_number(columns = GAMMA, decimals = 2) |>
+  cols_label(
+    rotulo = "Tópico",
+    categoria = "Categoria",
+    GAMMA = "γ (%)"
+  ) |>
+  tab_header(title = "Dez tópicos mais prevalentes") |>
+  cols_align(align = "left", columns = c(rotulo, categoria)) |>
+  cols_align(align = "right", columns = GAMMA) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = list(cells_title(groups = "title"), cells_column_labels())
+  ) |>
+  tab_style(
+    style = cell_text(align = "right"),
+    locations = cells_source_notes()
+  ) |>
+  tab_style(
+    style = cell_fill(color = "grey95"),
+    locations = cells_body(rows = seq(1, nrow(top10_tb), by = 2))
+  ) |>
+  data_color(
+    columns = categoria,
+    target_columns = everything(),
+    fn = \(x) unname(paleta_categorias[x]),
+    alpha = 0.5,
+    autocolor_text = FALSE
+  ) |>
+  tab_style(
+    style = cell_text(color = "black"),
+    locations = cells_body()
+  ) |>
+  tab_options(
+    data_row.padding = px(4),
+    table.font.size = px(14),
+    column_labels.border.bottom.color = "grey40",
+    table_body.hlines.color = "grey90"
+  )
+
+# Salvar Tabela 5
+gtsave(tab5_top10, here("04_relatorio", "tab5_top10.html"))
+
+# GRÁFICO 4 - TOP 10 TÓPICOS - EVOLUÇÃO ####
 top10 <- gamma_tb |>
   slice_max(GAMMA, n = 10) |>
   select(topic, GAMMA)
@@ -374,12 +426,177 @@ fig5_evoltop10 <-
     plot.caption = element_text(color = "grey40", hjust = 1)
   )
 
-# Salvar Gráfico Evolução Top1
+# Salvar Gráfico Evolução Top10
 ggsave(
   filename = here("04_relatorio", "fig5_evoltop10.png"),
   plot = fig5_evoltop10,
   width = 10,
   height = 6,
+  dpi = 300,
+  bg = "white"
+)
+
+# TABELA 5 - TOP 10 TÓPICOS POR ANO ####
+top10_ano <- gamma_doc |>
+  summarise(
+    GAMMA = mean(gamma) * 100,
+    .by = c(AN_BASE, topic, rotulo, categoria)
+  ) |>
+  slice_max(GAMMA, n = 10, by = AN_BASE, with_ties = FALSE) |>
+  mutate(
+    posicao = min_rank(desc(GAMMA)),
+    .by = AN_BASE
+  ) |>
+  arrange(AN_BASE, posicao)
+
+
+# Gráfico
+fig6_top10ano <-
+  top10_ano |>
+  mutate(categoria = factor(categoria, levels = names(paleta_categorias))) |>
+  ggplot(aes(factor(AN_BASE), posicao, fill = categoria)) +
+  geom_tile(color = "white", alpha = .6) +
+  geom_text(aes(label = str_wrap(rotulo, 18)), size = 2.6, lineheight = 0.9) +
+  scale_x_discrete(position = "top") +
+  scale_y_reverse(breaks = 1:10, expand = c(0, 0)) +
+  scale_fill_manual(values = paleta_categorias) +
+  guides(fill = guide_legend(nrow = 2, override.aes = list(alpha = .6))) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = NULL,
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 7.5, face = "bold"),
+    panel.grid = element_blank(),
+    axis.text.x.top = element_text(
+      face = "bold",
+      size = 16,
+      margin = margin(b = 2)
+    ),
+    axis.text.y = element_text(face = "bold"),
+    plot.title = element_text(face = "bold"),
+    plot.caption = element_text(color = "grey40", hjust = 1)
+  )
+
+# Salvar Gráfico
+ggsave(
+  filename = here("04_relatorio", "fig6_top10ano.png"),
+  plot = fig6_top10ano,
+  width = 14,
+  height = 10,
+  dpi = 300,
+  bg = "white"
+)
+
+# TOP10 - VARIAÇÃO DE PREVALÊNCIA ####
+variacao_topicos <- tidy_ano |>
+  filter_out(categoria == "Excluído") |>
+  arrange(topic, covariate.value) |>
+  summarise(
+    inicial = first(estimate),
+    final = last(estimate),
+    .by = c(topic, rotulo, categoria)
+  ) |>
+  mutate(variacao = (final - inicial) * 100)
+
+# Top 10 -- 5+ e 5-
+top_variacao <- bind_rows(
+  slice_max(variacao_topicos, variacao, n = 5, with_ties = FALSE),
+  slice_min(variacao_topicos, variacao, n = 5, with_ties = FALSE)
+) |>
+  mutate(
+    rotulo_painel = str_glue(
+      "{rotulo} ({scales::number(variacao, 
+      accuracy = 0.01, 
+      decimal.mark = ',', 
+      style_positive = 'plus')} p.p.)"
+    )
+  ) |>
+  select(topic, variacao, rotulo_painel)
+
+# Gráfico Top10 Variação
+fig7_variacao <-
+  tidy_ano |>
+  inner_join(top_variacao, by = "topic") |>
+  mutate(
+    categoria = str_squish(categoria) |>
+      factor(levels = names(paleta_categorias)),
+    rotulo_painel = fct_reorder(rotulo_painel, variacao, .desc = TRUE)
+  ) |>
+  ggplot(
+    aes(
+      covariate.value,
+      estimate,
+      ymin = ci.lower,
+      ymax = ci.upper
+    )
+  ) +
+  geom_ribbon(aes(fill = categoria), alpha = .2) +
+  geom_line(aes(color = categoria), linewidth = .8) +
+  scale_color_manual(
+    values = paleta_categorias,
+    labels = \(x) str_wrap(x, 20),
+    aesthetics = c("color", "fill")
+  ) +
+  scale_y_continuous(
+    labels = scales::label_percent(accuracy = 1)
+  ) +
+  scale_x_continuous(
+    breaks = seq(
+      min(tidy_ano$covariate.value),
+      max(tidy_ano$covariate.value),
+      by = 3
+    )
+  ) +
+  facet_wrap(
+    ~rotulo_painel,
+    ncol = 5,
+    labeller = label_wrap_gen(width = 28)
+  ) +
+  guides(
+    color = guide_legend(
+      override.aes = list(linewidth = 3, alpha = 1),
+      nrow = 1
+    ),
+    fill = "none"
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    color = NULL,
+    title = "Tópicos com maior variação de prevalência no período"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 10, face = "bold"),
+    strip.text = element_text(
+      size = 10,
+      face = "bold",
+      hjust = 0,
+      lineheight = 0.9,
+      margin = margin(1, 0, 2, 0)
+    ),
+    panel.spacing = unit(8, "pt"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
+    axis.text = element_text(size = 10, color = "grey40"),
+    axis.text.x = element_text(size = 10, angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(color = "grey40"),
+    plot.caption = element_text(color = "grey40", hjust = 1)
+  )
+
+# Salvar Gráfico
+ggsave(
+  filename = here("04_relatorio", "fig7_variacao.png"),
+  plot = fig7_variacao,
+  width = 12,
+  height = 8,
   dpi = 300,
   bg = "white"
 )
