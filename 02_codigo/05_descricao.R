@@ -4,7 +4,6 @@ library(here)
 library(gt)
 library(geobr)
 library(sf)
-library()
 
 # Banco -- n:5.280
 dados <- readRDS(here::here("01_dados", "catalogo_limpo.RDS"))
@@ -27,36 +26,41 @@ graf_ano <- dados |>
     dados |>
       count(AN_BASE) |>
       mutate(NM_GRAU_ACADEMICO = "TOTAL")
+  ) |>
+  mutate(
+    TIPO_TRABALHO = case_when(
+      NM_GRAU_ACADEMICO == "DOUTORADO" ~ "Tese",
+      NM_GRAU_ACADEMICO == "MESTRADO" ~ "Dissertação",
+      NM_GRAU_ACADEMICO == "TOTAL" ~ "Total"
+    )
   )
 
 # Paleta Cores
-cores_grau <- c(
+cores_tipo <- c(
   "Total" = "grey25",
-  "Mestrado" = "#5b859e",
-  "Doutorado" = "#af4f2f"
+  "Tese" = "#af4f2f",
+  "Dissertação" = "#5b859e"
 )
-
 fig1 <- graf_ano |>
-  mutate(
-    NM_GRAU_ACADEMICO = str_to_title(NM_GRAU_ACADEMICO) |>
-      factor(levels = names(cores_grau))
-  ) |>
-  ggplot(aes(AN_BASE, n, color = NM_GRAU_ACADEMICO)) +
+  mutate(TIPO_TRABALHO = factor(TIPO_TRABALHO, levels = names(cores_tipo))) |>
+  ggplot(aes(AN_BASE, n, color = TIPO_TRABALHO)) +
   geom_line(linewidth = 1) +
   geom_point(size = 1.2, alpha = 0.8) +
   scale_x_continuous(breaks = unique(graf_ano$AN_BASE)) +
-  scale_color_manual(values = cores_grau) +
+  scale_color_manual(values = cores_tipo) +
+  guides(color = guide_legend(override.aes = list(linewidth = 1.5, size = 2))) +
   labs(
     x = "Ano",
     y = "n",
     color = NULL,
-    title = "Evolução de dissertações e teses em Nutrição por ano (n:5280)"
+    title = "Evolução de Teses e Dissertações em Nutrição por ano (n: 5280)"
   ) +
   theme_minimal() +
   theme(
     panel.grid.major.x = element_blank(),
     panel.grid.minor = element_blank(),
-    panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3)
+    panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
+    legend.text = element_text(size = 11)
   )
 
 # Salvar gráfico
@@ -115,11 +119,11 @@ tab1_ano <- tab_ano |>
   cols_move(columns = DOUTORADO_N, after = MESTRADO_N) |>
   cols_label(
     AN_BASE = "Ano",
-    MESTRADO_N = "Mestrado",
-    DOUTORADO_N = "Doutorado",
+    MESTRADO_N = "Dissertação",
+    DOUTORADO_N = "Tese",
     TOTAL_N = "Total"
   ) |>
-  tab_header(title = "Evolução de trabalhos em Nutrição por ano | n(%)") |>
+  tab_header(title = "Evolução de Defesas em Nutrição por Ano | n(%)") |>
   tab_source_note("Fonte: Catálogo de Teses e Dissertações da CAPES") |>
   cols_align(align = "left", columns = AN_BASE) |>
   cols_align(align = "right", columns = c(MESTRADO_N, DOUTORADO_N, TOTAL_N)) |>
@@ -158,17 +162,16 @@ base_uf <- dados |>
   arrange(desc(n))
 
 # Tabela UF
-#tab2_uf <-
-base_uf |>
+tab2_uf <- base_uf |>
   bind_rows(
     summarise(base_uf, SG_UF_IES = "Total", n = sum(n), FREQ = sum(FREQ))
   ) |>
   gt(locale = "pt") |>
   fmt_integer(columns = n) |>
   fmt_number(columns = FREQ, decimals = 1) |>
-  cols_merge(columns = c(n, FREQ), pattern = "{1} ({2}%)") |>
+  cols_merge(columns = c(n, FREQ), pattern = "{1} ({2})") |>
   cols_label(SG_UF_IES = "UF", n = "Trabalhos") |>
-  tab_header(title = "Distribuição de trabalhos por UF") |>
+  tab_header(title = "Defesas por Estado | n(%)") |>
   # tab_source_note("Fonte: Catálogo de Teses e Dissertações da CAPES") |>
   cols_align(align = "center", columns = SG_UF_IES) |>
   cols_align(align = "center", columns = n) |>
@@ -194,7 +197,8 @@ base_uf |>
   ) |>
   tab_options(
     data_row.padding = px(4),
-    table.font.size = px(14),
+    table.font.size = px(12),
+    heading.title.font.size = px(14),
     column_labels.border.bottom.color = "grey40",
     table_body.hlines.color = "grey90"
   )

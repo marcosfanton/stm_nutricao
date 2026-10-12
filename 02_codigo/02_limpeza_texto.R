@@ -18,8 +18,8 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
       across(
         {{ variavel }},
         ~ .x |>
-          stringr::str_to_lower() |>
           stringi::stri_trans_general("Latin-ASCII") |>
+          stringr::str_to_lower() |>
           stringr::str_replace_all("[[:punct:]]", " ") |>
           stringr::str_squish() |>
           stringr::str_split("\\s+") |>
@@ -27,6 +27,11 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
       )
     )
 }
+
+limpeza_texto <- function(dados, variavel, idioma = "pt") {
+  stopwords_pt <- stopwords::stopwords(idioma) |>
+    stringi::stri_trans_general("Latin-ASCII") |>
+    stringr::str_to_lower()
 # Limpeza das colunas DS_PALAVRA_CHAVE, DS_RESUMO
 dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, DS_RESUMO))
 
