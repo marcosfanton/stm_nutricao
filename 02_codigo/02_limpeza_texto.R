@@ -5,13 +5,13 @@ library(tidytext)
 library(stopwords)
 
 # Abrir dados (n: 5.280)
-dados <- readRDS(file = "01_dados/catalogo_limpo.RDS")
+dados <- readr::read_rds(here("01_dados", "catalogo_limpo.RDS"))
 
 # Função de limpeza de texto ####
 limpeza_texto <- function(dados, variavel, idioma = "pt") {
   stopwords_pt <- stopwords::stopwords(idioma) |>
-    stringr::str_to_lower() |>
-    stringi::stri_trans_general("Latin-ASCII")
+    stringi::stri_trans_general("Latin-ASCII") |>
+    stringr::str_to_lower()
 
   dados |>
     dplyr::mutate(
@@ -28,10 +28,6 @@ limpeza_texto <- function(dados, variavel, idioma = "pt") {
     )
 }
 
-limpeza_texto <- function(dados, variavel, idioma = "pt") {
-  stopwords_pt <- stopwords::stopwords(idioma) |>
-    stringi::stri_trans_general("Latin-ASCII") |>
-    stringr::str_to_lower()
 # Limpeza das colunas DS_PALAVRA_CHAVE, DS_RESUMO
 dados <- dados |> limpeza_texto(c(DS_PALAVRA_CHAVE, DS_RESUMO))
 
@@ -50,7 +46,7 @@ dados <- dados |>
   mutate(
     DS_RESUMO = str_replace_all(DS_RESUMO, dicionario_grams)
   ) |>
-  select(DOC_ID, AN_BASE, NM_PRODUCAO, DS_RESUMO)
+  select(DOC_ID, AN_BASE, NM_PRODUCAO, DS_RESUMO, NM_REGIAO)
 
 saveRDS(dados, file = "01_dados/dados_resumos.RDS")
 dados <- readRDS("01_dados/dados_resumos.RDS")
@@ -59,7 +55,7 @@ dados <- readRDS("01_dados/dados_resumos.RDS")
 dados_stm <- dados |>
   tidytext::unnest_tokens(output = WORD, input = DS_RESUMO)
 
-# Remoção de números e palavras com menos de 2 caracteres
+# Remoção de números e palavras  de 2 ou menos caracteres
 dados_stm <- dados_stm |>
   filter_out(
     str_detect(WORD, "^\\d+$") |
